@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="id"><head><meta charset="utf-8"><title>Pharmacy Life: The Pharmacist</title>
+<meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no,viewport-fit=cover">
+<style>
+:root{--ink:#0f2a4a;--paper:#f4fbff;--acc:#2b7fd0;--mint:#aeeedd;--bs:1;box-sizing:border-box}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--ink:#e8f6ff;--paper:#16324f}}
+:root[data-theme="dark"]{--ink:#e8f6ff;--paper:#16324f}
+html,body{margin:0;height:100%;background:#0f2a4a;overflow:hidden;font-family:"Trebuchet MS",Verdana,sans-serif;touch-action:none;user-select:none;-webkit-user-select:none}
+#g{position:fixed;inset:0}
+button{font:inherit;cursor:pointer}
+#hud{position:fixed;inset:0;pointer-events:none;padding:env(safe-area-inset-top,0) 8px 0}
+#st{position:absolute;left:8px;top:calc(env(safe-area-inset-top,0px) + 6px);background:#0f2a4acc;color:#fff;padding:5px 8px;border-radius:6px;font-size:12px;line-height:1.4;border:2px solid var(--mint)}
+#tp{position:absolute;right:8px;top:calc(env(safe-area-inset-top,0px) + 6px);text-align:right;pointer-events:auto}
+#clk{background:#0f2a4acc;color:#fff;padding:4px 8px;border-radius:6px;font-size:12px;display:inline-block;border:2px solid var(--mint)}
+#ob{max-width:210px;margin:4px 0 4px auto;background:#fff9;color:#0f2a4a;font-size:11px;padding:3px 6px;border-radius:6px}
+#bt button{background:var(--acc);color:#fff;border:2px solid #fff;border-radius:6px;font-size:11px;padding:6px 7px;margin-left:3px}
+#joy{position:fixed;left:calc(18px + env(safe-area-inset-left,0px));bottom:calc(18px + env(safe-area-inset-bottom,0px));width:calc(120px*var(--bs));height:calc(120px*var(--bs));border-radius:50%;background:#ffffff40;border:3px solid #ffffffaa;touch-action:none}
+#knob{position:absolute;left:50%;top:50%;width:46%;height:46%;border-radius:50%;background:var(--acc);border:3px solid #fff;transform:translate(-50%,-50%)}
+#act{position:fixed;right:calc(18px + env(safe-area-inset-right,0px));bottom:calc(18px + env(safe-area-inset-bottom,0px));display:flex;gap:10px;align-items:flex-end}
+#act button{border-radius:50%;border:3px solid #fff;color:#fff;font-weight:700;touch-action:none}
+#bi{width:calc(86px*var(--bs));height:calc(86px*var(--bs));background:#e8833a;font-size:12px}
+#br{width:calc(64px*var(--bs));height:calc(64px*var(--bs));background:var(--acc);font-size:12px}
+#prompt{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:#0f2a4af0;color:#fff;border:2px solid var(--mint);padding:5px 12px;border-radius:8px;font-size:13px;pointer-events:none;white-space:nowrap}
+#toast{position:fixed;left:50%;top:calc(env(safe-area-inset-top,0px) + 56px);transform:translateX(-50%);background:#fff;color:#0f2a4a;padding:6px 12px;border-radius:8px;font-size:13px;opacity:0;transition:opacity .25s;pointer-events:none;max-width:80vw;text-align:center}
+#modal,#start{position:fixed;inset:0;background:#0f2a4acc;display:flex;align-items:center;justify-content:center;z-index:5}
+[hidden]{display:none!important}
+.card{background:var(--paper);color:var(--ink);border:3px solid var(--acc);border-radius:10px;padding:12px 14px;width:min(92vw,520px);max-height:88vh;overflow:auto;font-size:14px;line-height:1.45}
+.card h3{margin:0 0 6px;font-size:17px}
+.card button{display:block;width:100%;margin-top:6px;padding:8px 10px;border-radius:8px;border:2px solid var(--acc);background:var(--paper);color:var(--ink);text-align:left;font-size:13px}
+.card button:disabled{opacity:.4}
+.card button:first-of-type{background:var(--acc);color:#fff}
+.card input{width:100%;padding:7px;border:2px solid var(--acc);border-radius:6px;font:inherit;box-sizing:border-box;background:#fff;color:#0f2a4a}
+#start .card{text-align:center}
+#start h1{margin:0;font-size:24px;letter-spacing:1px}
+#start p{margin:4px 0 10px;font-size:12px}
+#rot{position:fixed;inset:0;z-index:9;background:#0f2a4a;color:#fff;display:none;align-items:center;justify-content:center;text-align:center;font-size:18px;padding:20px}
+@media(orientation:portrait){#rot{display:flex}}
+:root{--ink:#3a3427;--paper:#fcf6e8;--acc:#4f9a78;--mint:#c9e6a8}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--ink:#f6edd8;--paper:#2e3a32}}
+:root[data-theme="dark"]{--ink:#f6edd8;--paper:#2e3a32}
+html,body{background:#6f8f72}
+#st,#clk,#prompt{background:#4a3a2ae8;border:2px solid #e3b565;color:#fff6e0;border-radius:8px;box-shadow:0 2px 0 #2d2318}
+#ob{background:#fff3d6ee;color:#4a3a2a;border:1px solid #e3b565}
+#bt button{background:#6b8f5e;border:2px solid #f3e3b8;box-shadow:0 2px 0 #3d5535}#bt button:nth-child(2){background:#5b8fa8}#bt button:nth-child(3){background:#c9893f}#bt button:nth-child(4){background:#9a6a8a}
+#joy{background:#fff6dc55;border:3px solid #f3e3b8cc}#knob{background:#d9784a;border:3px solid #fff6e0}
+#bi{background:#d9784a}#br{background:#5f9e7a}#act button{border:3px solid #fff3d6;box-shadow:0 3px 0 #0003}
+#toast{background:#fff3d6;color:#4a3a2a;border:2px solid #e3b565}
+#modal,#start{background:#2f3b2fd0}#start{background:linear-gradient(#a8d4c2,#f5e6c4 70%,#e0b87a)}
+.card{background:var(--paper);border:3px solid #b98652;box-shadow:0 4px 0 #6b4a2b,inset 0 0 0 2px #ffffff40}.card h3{color:#4f9a78}
+.card button{border:2px solid #b98652;background:var(--paper);color:var(--ink)}.card button:first-of-type{background:#5f9e7a;color:#fff;border-color:#3f7a5c}
+.card input{border:2px solid #b98652;background:#fffdf5;color:#3a3427}#rot{background:#3a3427}
+</style></head><body>
+<div id="g"></div>
+<div id="hud"><div id="st"></div><div id="tp"><div id="clk"></div><br><div id="ob"></div><div id="bt"><button id="b1">INVENTORY</button><button id="b2">MAP</button><button id="b3">TASK</button><button id="b4">MENU</button></div></div></div>
+<div id="joy"><div id="knob"></div></div>
+<div id="act"><button id="br">RUN</button><button id="bi">INTERACT</button></div>
+<div id="prompt" hidden></div><div id="toast"></div>
+<div id="modal" hidden><div class="card"><h3 id="mt"></h3><div id="mb"></div><div id="mbtn"></div></div></div>
+<div id="start"><div class="card"><h1>PHARMACY LIFE: THE PHARMACIST</h1><p>YOUR PHARMACY. YOUR PATIENTS. YOUR RESPONSIBILITY.</p><p style="font-weight:700;color:#4f9a78;letter-spacing:1px;margin:0 0 8px">Dikembangkan oleh Faitur</p>
+<input id="nm" maxlength="14" placeholder="Nama apoteker" value="Apoteker"><button id="s1">Mulai karier baru</button><button id="s2" hidden>Lanjutkan permainan</button>
+<p style="margin-top:10px">Gerak: joystick / WASD. Interaksi: tombol INTERACT / E. Lari: RUN / Shift.<br>Game edukasi dengan skenario fiktif, bukan panduan klinis.</p></div></div>
+<div id="rot">Putar HP ke mode landscape untuk bermain.</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/phaser/3.60.0/phaser.min.js"></script>
+<script>
+const $=id=>document.getElementById(id),W=1560,H=640;
+let S,SC,busy=true,RUN=false,IP=false,J={x:0,y:0};
+const CFG=(()=>{try{return JSON.parse(localStorage.getItem('plcfg'))||{sens:1,bs:1}}catch(e){return{sens:1,bs:1}}})();
+const MEDS={para:{n:'Paracetamol',f:'Tablet 500 mg',p:3000,c:1500},amox:{n:'Amoxicillin',f:'Kapsul 500 mg',p:8000,c:5000},cet:{n:'Cetirizine',f:'Tablet 10 mg',p:5000,c:2500},ant:{n:'Antasida DOEN',f:'Tablet kunyah',p:2500,c:1200},vitc:{n:'Vitamin C',f:'Tablet 500 mg',p:2000,c:900}};
+const nm=k=>MEDS[k].n,rp=n=>'Rp'+Math.round(n).toLocaleString('id-ID');
+const LV=[0,100,250,450,700,1000,1500],TT=['Beginner Pharmacist','Junior Pharmacist','Professional Pharmacist','Senior Pharmacist','Head Pharmacist','Pharmacy Manager','Pharmacy Director'];
+const NAMES=['Budi','Siti','Agus','Dewi','Rina','Joko','Wati','Andi','Sari','Hendra'],COMP=[['demam',['para']],['alergi musiman',['cet']],['nyeri lambung',['ant']],['lemas',['vitc']],['infeksi',['amox','para']]];
+const PAL_OLD=[{coat:'#e6735a',hair:'#222',shirt:'#fff'},{coat:'#5aa86b',hair:'#8a5a2b',shirt:'#fff'},{coat:'#7a6bd0',hair:'#ccc',shirt:'#f6e27a'},{coat:'#d9a441',hair:'#5a2b1b',shirt:'#fff'}];
+const QZ=[{q:'Pasien bertanya cara memakai obat. Respons terbaik?',a:[['Jelaskan aturan pakai sesuai etiket, lalu minta pasien mengulang (teach-back).',2],['Katakan "ikuti saja etiketnya".',0],['Serahkan tanpa penjelasan agar antrean cepat.',-1]]},
+{q:'Pasien bertanya cara menyimpan obat.',a:[['Simpan sesuai petunjuk kemasan, di tempat sejuk dan kering, jauh dari jangkauan anak.',2],['Simpan di mana saja asal ada tempat.',0],['Simpan di kamar mandi yang lembap.',-1]]},
+{q:'Pasien lupa apakah sudah minum obat. Respons?',a:[['Jangan menebak: arahkan ke petunjuk pada etiket/leaflet dan sarankan bertanya ke apoteker bila ragu.',2],['Suruh minum lagi supaya aman.',-1],['Abaikan, itu hal kecil.',0]]}];
+const shuf=a=>[...a].sort(()=>Math.random()-.5);
+const def=()=>({name:'Apoteker',money:200000,xp:0,rep:50,en:100,t:480,stock:{para:25,amox:15,cet:15,ant:20,vitc:20},inv:{},orders:[],pal:{coat:'#ffffff',hair:'#3b2412',shirt:'#2b7fd0'},x:320,y:140,inc:0,exp:0,d:{pt:0,lab:0,cl:0},bat:null,rcv:[],emp:[],hist:[],ret:[],sup:0});
+const day=()=>Math.floor(S.t/1440)+1,hr=()=>(S.t%1440)/60,lvl=()=>{let l=0;LV.forEach((v,i)=>{if(S.xp>=v)l=i});return l};
+const fmt=()=>{const m=S.t%1440;return String(Math.floor(m/60)).padStart(2,'0')+':'+String(m%60).padStart(2,'0')};
+function save(){if(!S)return;try{chkAch();if(SC&&SC.pl){S.x=SC.pl.x;S.y=SC.pl.y}localStorage.setItem('plsave',JSON.stringify(S))}catch(e){}}
+function toast(m){const t=$('toast');t.textContent=m;t.style.opacity=1;clearTimeout(t.h);t.h=setTimeout(()=>t.style.opacity=0,2200)}
+function modal(t,h,b){busy=true;J.x=J.y=0;RUN=false;IP=false;jk.style.transform='translate(-50%,-50%)';$('mt').textContent=t;$('mb').innerHTML=h;const x=$('mbtn');x.innerHTML='';b.forEach(o=>{const e=document.createElement('button');e.textContent=o.t;e.disabled=!!o.d;e.onclick=()=>o.fn?o.fn():close();x.appendChild(e)});$('modal').hidden=false}
+function close(){$('modal').hidden=true;busy=false}
+function addXP(n){const o=lvl();S.xp+=n;if(lvl()>o)toast('Naik level: '+TT[lvl()]+'!')}
+function pay(n){S.money+=n;n>0?S.inc+=n:S.exp-=n}
+function hud(){const l=lvl(),nx=LV[l+1]||'MAX';$('st').innerHTML=`<b>${S.name}</b> Lv${l+1} ${TT[l]}<br>XP ${S.xp}/${nx} | ${rp(S.money)}<br>Reputasi ${Math.round(S.rep)} | Energi ${Math.round(S.en)}%`;
+$('clk').textContent=`${['☀️','⛅','🌧️'][day()%3]} Hari ${day()} • ${fmt()} • ${hr()>=8&&hr()<18?'BUKA':'TUTUP'}`;$('ob').textContent='Misi: '+obj()}
+function obj(){const p=SC&&SC.act&&SC.act();if(!p)return SC&&SC.q.length?'Pasien menuju meja pelayanan':hr()>=8&&hr()<18?'Tunggu pasien / jelajahi apotek':'Apotek tutup, istirahat atau latihan racik';
+return['Sapa pasien & terima resep di kasir','Periksa resep di komputer (Ruang Resep)','','Ambil '+p.meds.map(nm).join(', ')+' di rak, serahkan di kasir'][p.stage]}
+function setSp(sp,k,dir,mv,t,fx){sp.setTexture(k+dir+(mv?Math.floor(t/fx)%2:0));sp.flipX=dir=='s'&&sp._l}
+function mkCharOld(sc,k,pal){['d','u','s'].forEach(dir=>[0,1].forEach(f=>{const key=k+dir+f;if(sc.textures.exists(key))sc.textures.remove(key);const t=sc.textures.createCanvas(key,16,24),c=t.getContext('2d'),R=(col,x,y,w,h)=>{c.fillStyle=col;c.fillRect(x,y,w,h)};
+R('#33294d',4,17+(f?0:1),3,6-(f?0:1));R('#33294d',9,17+(f?1:0),3,6-(f?1:0));R(pal.coat,3,9,10,9);R(pal.coat,1,10,2,6+f);R(pal.coat,13,10,2,7-f);
+if(dir=='d')R(pal.shirt,6,9,4,5);R('#f1c9a0',4,2,8,7);R(pal.hair,4,1,8,3);if(dir=='u')R(pal.hair,4,1,8,8);if(dir=='d'){R('#222',6,5,1,2);R('#222',9,5,1,2)}if(dir=='s'){R('#222',10,5,1,2);R(pal.hair,4,1,3,7)}t.refresh()}))}
+const slot=i=>({x:320,y:285+i*45});
+class Main extends Phaser.Scene{
+create(){SC=this;this.q=[];this.pts=[];this.acc=0;this.sp=2000;this.doors=[];this.I=[];
+mkChar(this,'pl',S.pal);PAL.forEach((p,i)=>mkChar(this,'n'+i,p));EPAL.forEach((p,i)=>mkChar(this,'e'+i,p));
+this.physics.world.setBounds(0,0,W,H);this.solid=this.physics.add.staticGroup();
+const g=this.add.graphics(),fl=(x,y,w,h,a,b)=>{for(let i=0;i<w/32;i++)for(let j=0;j<h/32;j++){g.fillStyle((i+j)%2?a:b);g.fillRect(x+i*32,y+j*32,32,32)}};
+fl(0,0,704,640,0xf3ead2,0xeadfc2);fl(704,0,416,224,0xe4eee4,0xd6e4d8);fl(704,224,416,200,0xe9d3ae,0xdfc59a);fl(704,424,416,216,0xe6efea,0xd8e5de);
+g.fillStyle(0xd89a72);g.fillRect(280,255,80,360);
+const F=(x,y,w,h,c,l)=>{const r=this.add.rectangle(x+w/2,y+h/2,w,h,c).setStrokeStyle(2,0x3a3427);this.solid.add(r);if(l){r.setAlpha(0);drawObj(this,x,y,w,h,l)}return r};
+const WL=0x7a6552;F(0,0,W,16,WL);F(0,0,16,640,WL);g.fillStyle(0xcdb89a);g.fillRect(1104,0,16,640);[[0,90],[150,290],[350,500],[560,640]].forEach(([a,b])=>F(1104,a,16,b-a,WL));F(0,624,300,16,WL);F(380,624,W-380,16,WL);
+[[16,90],[150,290],[350,500],[560,624]].forEach(([a,b])=>F(700,a,16,b-a,WL));F(716,210,388,16,WL);F(716,420,388,16,WL);
+[[708,120],[708,320],[708,530]].forEach(([x,y])=>this.doors.push({x,y,r:this.add.rectangle(x,y,8,60,0xc28b4e).setDepth(3),v:1}));this.doors.push({x:340,y:632,r:this.add.rectangle(340,632,80,8,0xc28b4e).setDepth(3),v:0});
+F(200,205,240,30,0x8b5a2b,'KASIR');F(24,40,36,200,0xb98a52,'RAK');F(740,34,110,36,0x9a6b3b,'KOMPUTER');F(740,236,300,28,0xb98a52,'RAK GUDANG');F(1040,300,50,100,0xc9a26a,'PBF');F(820,500,160,50,0x8fc4b0,'MEJA RACIK');F(600,540,36,36,0xc9714a,'KURSI');
+this.add.text(480,60,'PHARMACY LIFE',{fontSize:'14px',fontFamily:'monospace',color:'#2b7fd0'}).setOrigin(.5);
+const O=(x,y,t,fn,r)=>{this.I.push({x,y,t,fn,r:r||75});const e=this.add.text(x,y-34,'!',{fontSize:'16px',fontFamily:'monospace',color:'#fff',backgroundColor:'#e8833a'}).setOrigin(.5).setDepth(900);this.tweens.add({targets:e,y:y-42,yoyo:true,repeat:-1,duration:600})};
+O(320,222,'Kasir / Meja Pelayanan',svc,95);O(800,52,'Komputer Apotek',pc);O(42,140,'Rak Obat',shelf,70);O(890,250,'Rak Gudang',shelf,90);O(1065,350,'Penerimaan PBF',ord);O(900,525,'Meja Racik',lab);O(618,558,'Kursi Istirahat',rest);
+this.pl=this.physics.add.sprite(S.x,S.y,'pld0').setScale(2).setOrigin(.5,1);this.pl.body.setSize(10,8).setOffset(3,16);this.pl.setCollideWorldBounds(true);this.pl.dir='d';
+this.physics.add.collider(this.pl,this.solid);this.cameras.main.setBounds(0,0,W,H).startFollow(this.pl,true,.12,.12).setRoundPixels(true);
+buildExp(this);buildMain(this);drawAllDec(this);this.ov=this.add.rectangle(400,200,800,400,0x10204a,0).setScrollFactor(0).setDepth(9999);
+this.kb=this.input.keyboard.addKeys('W,A,S,D,UP,DOWN,LEFT,RIGHT,SHIFT,E');SC.ew=[];S.emp.forEach(addEmpSp);applyQ();hud()}
+act(){const p=this.q[0];return p&&!p.leave&&!p.path.length&&Math.hypot(p.sp.x-320,p.sp.y-285)<8?p:null}
+spawn(){const c=COMP[Math.floor(Math.random()*COMP.length)],r=Math.random(),i=Math.floor(Math.random()*PAL.length);
+const p={name:NAMES[Math.floor(Math.random()*10)]+' (fiktif)',age:18+Math.floor(Math.random()*60),comp:c[0],meds:[...c[1]],allergy:'Tidak ada',sig:true,issue:null,stage:0,pal:i,path:[{x:340,y:590}],w:0,leave:false};
+if(r<.2){p.sig=false;p.issue='Aturan pakai tidak tertulis'}else if(c[1].includes('amox')&&r<.5){p.allergy='Penisilin';p.issue='Alergi'}
+p.sp=this.add.sprite(340,670,'n'+i+'d0').setScale(2).setOrigin(.5,1);this.q.push(p);this.pts.push(p)}
+leaveP(p){this.q=this.q.filter(x=>x!==p);p.leave=true;p.path=[{x:340,y:590},{x:340,y:690}]}
+update(t,dt){
+if(!busy){this.acc+=dt;while(this.acc>=500){this.acc-=500;S.t++;this.onMin()}}
+let x=J.x,y=J.y;const k=this.kb;if(k.A.isDown||k.LEFT.isDown)x=-1;if(k.D.isDown||k.RIGHT.isDown)x=1;if(k.W.isDown||k.UP.isDown)y=-1;if(k.S.isDown||k.DOWN.isDown)y=1;
+const m=Math.hypot(x,y);if(m>1){x/=m;y/=m}const run=RUN||k.SHIFT.isDown,mv=m>.1&&!busy;
+this.pl.setVelocity(mv?x*(run?190:110)*(S.en<20?.7:1):0,mv?y*(run?190:110)*(S.en<20?.7:1):0);
+if(mv){this.pl.dir=Math.abs(y)>Math.abs(x)?(y<0?'u':'d'):'s';this.pl._l=x<0}
+setSp(this.pl,'pl',this.pl.dir,mv,t,run?110:190);this.pl.setDepth(this.pl.y);
+this.sp-=dt;if(this.sp<=0&&!busy){this.sp=18000+Math.random()*10000;if(hr()>=8&&hr()<18&&this.q.length<4)this.spawn()}
+this.pts=this.pts.filter(p=>{if(!p.sp.active)return false;const tg=p.path.length?p.path[0]:(p.leave?null:slot(this.q.indexOf(p)));let mvn=false,dir='d';
+if(!p.leave){p.w+=dt*(S.emp.some(e=>e.r=='kasir')?.5:1)*(S.up&&S.up.ac?.8:1);if(p.w>150000&&p.stage==0&&this.q.indexOf(p)>0){S.rep=Math.max(0,S.rep-3);toast(p.name+' pergi karena antre terlalu lama');this.leaveP(p)}}
+if(tg){const dx=tg.x-p.sp.x,dy=tg.y-p.sp.y,d=Math.hypot(dx,dy);if(d>3){const s=70*dt/1000;p.sp.x+=dx/d*s;p.sp.y+=dy/d*s;mvn=true;dir=Math.abs(dy)>Math.abs(dx)?(dy<0?'u':'d'):'s';p.sp._l=dx<0}else if(p.path.length)p.path.shift()}
+if(p.leave&&!p.path.length){p.sp.destroy();return false}
+setSp(p.sp,'n'+p.pal,dir,mvn,t,180);p.sp.setDepth(p.sp.y);return true});
+empUp(this,t,dt);ambUp(this,t,dt);this.doors.forEach(d=>{const n=[this.pl,...this.pts.map(p=>p.sp)].some(s=>Math.hypot(s.x-d.x,s.y-d.y)<75),tg=n?.05:1;d.v?d.r.scaleY+=(tg-d.r.scaleY)*.2:d.r.scaleX+=(tg-d.r.scaleX)*.2});
+const h=hr();this.ov.setAlpha(h<8?.28:h<16?0:h<18?(h-16)*.08:.28);
+let b=null,bd=1e9;this.I.forEach(o=>{const d=Math.hypot(this.pl.x-o.x,this.pl.y-o.y);if(d<o.r&&d<bd){b=o;bd=d}});
+const pr=$('prompt');if(b&&!busy){pr.hidden=false;pr.textContent='[ E ] INTERACT — '+b.t}else pr.hidden=true;
+if((Phaser.Input.Keyboard.JustDown(k.E)||IP)&&b&&!busy)b.fn();IP=false;
+this.hu=(this.hu||0)+dt;if(this.hu>250){this.hu=0;hud()}}
+onMin(){S.orders=S.orders.filter(o=>{if(o.eta<=S.t){if(S.emp.some(e=>e.r=='gudang')){recv(o);toast('Petugas gudang menerima: '+nm(o.k))}else{S.rcv.push(o);toast('Paket PBF tiba di area penerimaan: '+nm(o.k))}return false}return true});
+if(S.t%60==30&&hr()>=9&&hr()<17&&Math.random()<.2)rEvent();if(S.t%1440==1080)toast('Apotek tutup 18:00. Selesaikan pasien yang tersisa.');if(S.t%1440>=1200)newDay()}}
+function newDay(){const d=day(),inc=S.inc,ex=S.exp;const sal=S.emp.reduce((a,e)=>a+e.s,0);S.money-=50000+sal;S.t=d*1440+480;expire();S.hist.push({d,i:S.inc,e:S.exp+50000+sal});S.hist=S.hist.slice(-7);SC.q.slice().forEach(p=>SC.leaveP(p));
+const done=S.d.pt;S.inc=0;S.exp=0;S.d={pt:0,lab:0,cl:0};save();modal('Laporan Harian — Hari '+d,`Pasien dilayani: ${done}<br>Pendapatan: ${rp(inc)}<br>Pengeluaran: ${rp(ex)} + biaya operasional ${rp(50000)} + gaji ${rp(sal)}<br>Saldo: ${rp(S.money)}<br><i>Hari ${d+1} dimulai 08:00.</i>`,[{t:'Mulai hari baru'}])}
+function claim(){if(!S.d.cl&&S.d.pt>=5&&S.d.lab>=1){S.d.cl=1;pay(50000);addXP(40);toast('Misi harian selesai! +Rp50.000 +40 XP')}}
+function svc(){const p=SC.act();if(!p)return modal('Kasir','Belum ada pasien di meja. Tunggu pasien dari antrean.',[{t:'OK'}]);
+if(p.stage==0)return modal(p.name+', '+p.age+' th',`"Permisi, saya ${p.comp}. Ini resep/permintaan obatnya."<br><i>Periksa resep di komputer (Ruang Resep).</i>`,[{t:'Terima resep',fn:()=>{p.stage=1;close()}}]);
+if(p.stage<3)return modal('Kasir','Resep belum selesai diverifikasi di komputer.',[{t:'OK'}]);
+const inv=S.inv,miss=p.meds.filter(k=>!(inv[k]>0)),wrong=Object.keys(inv).filter(k=>inv[k]>0&&!p.meds.includes(k));
+if(miss.length||wrong.length)return modal('Pemeriksaan akhir',(miss.length?'Belum diambil: '+miss.map(nm).join(', ')+'.<br>':'')+(wrong.length?'Tidak sesuai resep: '+wrong.map(nm).join(', ')+' (kembalikan lewat INVENTORY).':''),[{t:'OK'}]);
+p.meds.forEach(k=>inv[k]--);p.qs=shuf(QZ).slice(0,2).map(q=>({q:q.q,a:shuf(q.a)}));counsel(p,0,0)}
+function counsel(p,i,sc){if(i==2)return fin2(p,sc);const q=p.qs[i];modal('Etiket & Konseling '+(i+1)+'/2',q.q,q.a.map(a=>({t:a[0],fn:()=>{toast(a[1]>1?'Tepat!':a[1]==0?'Kurang lengkap':'Berisiko!');counsel(p,i+1,sc+a[1])}})))}
+function fin2(p,sc){const e=p.meds.reduce((s,k)=>s+MEDS[k].p,0);pay(e);addXP(20+Math.max(0,sc)*5);S.rep=Math.min(100,Math.max(0,S.rep+(sc>=3?2:sc>=1?0:-2)));S.tot=(S.tot||0)+1;wk('pt');S.d.pt++;if(S.emp.some(e=>e.r=='apt'))addXP(3);const ec=enCost(p);S.en=Math.max(0,S.en-ec);toast('Pelayanan selesai. Energi -'+ec);SC.leaveP(p);claim();save();
+modal('Pelayanan selesai',`Kepuasan pasien: ${sc>=3?'Sangat puas':sc>=1?'Cukup':'Kurang puas'}<br>Pendapatan: ${rp(e)} • XP +${20+Math.max(0,sc)*5}<br><b>Catatan belajar</b><br>${p.meds.map(k=>'• <b>'+nm(k)+'</b> ('+MEDS[k].cls+'): '+MEDS[k].ind).join('<br>')}<br><small>Acuan pembelajaran: Permenkes No. 73 Tahun 2016 tentang Standar Pelayanan Kefarmasian di Apotek (pelayanan resep & konseling).</small>`,[{t:'Lanjut'}])}
+function pc(){modal('Komputer Apotek','Sistem informasi apotek (simulasi).',[{t:'Resep aktif',fn:rx},{t:'Order PBF',fn:ord},{t:'Keuangan',fn:fin},{t:'Karyawan',fn:emp},{t:'Buku Obat (Formularium)',fn:buku},{t:'Renovasi & Dekorasi',fn:reno},{t:'Ensiklopedia Farmasi',fn:enc},{t:'Kasus Klinis',fn:clin},{t:'Karier & Pencapaian',fn:career},{t:'Tutup'}])}
+function rx(){const p=SC.act();if(!p||p.stage<1)return modal('Resep aktif','Belum ada resep. Terima resep dari pasien di kasir.',[{t:'Kembali',fn:pc}]);
+if(p.stage>=3)return modal('Resep aktif','Resep sudah diverifikasi. Ambil obat di rak, lalu serahkan di kasir.',[{t:'Kembali',fn:pc}]);
+modal('Resep: '+p.name,`Umur: ${p.age} th • Keluhan: ${p.comp}<br>Riwayat alergi: <b>${p.allergy}</b><br>R/ ${p.meds.map(k=>`${nm(k)} ${MEDS[k].f} (stok ${S.stock[k]}) — <i>${MEDS[k].ind}</i>`).join('<br>')}<br>Aturan pakai: ${p.sig?'tercantum (fiktif)':'<i>(kosong)</i>'}<br><small>Periksa kelengkapan, alergi, dan stok sebelum memproses.</small>`,
+[{t:'Proses resep',fn:()=>{if(p.issue)return modal('Resep bermasalah','Resep tidak boleh diproses: ada ketidaklengkapan atau potensi masalah. Lakukan klarifikasi ke dokter.',[{t:'Kembali',fn:rx}]);
+const lack=p.meds.filter(k=>S.stock[k]+(S.inv[k]||0)<1);if(lack.length)return modal('Stok kosong','Stok '+lack.map(nm).join(', ')+' habis. Pesan di Order PBF.',[{t:'Kembali',fn:rx}]);p.stage=3;close();toast('Resep terverifikasi. Ambil obat di rak.')}},
+{t:'Klarifikasi ke dokter',fn:()=>{if(!p.issue){S.t+=5;return modal('Dokter virtual','"Resep sudah sesuai." (Klarifikasi tidak perlu memakan waktu.)',[{t:'Kembali',fn:rx}])}
+if(p.issue=='Alergi'){addXP(30);S.rep=Math.min(100,S.rep+3);SC.leaveP(p);save();return modal('Klarifikasi berhasil','Dokter virtual: resep dibatalkan, pasien dirujuk kembali untuk penyesuaian terapi. Keselamatan pasien terjaga.',[{t:'Lanjut'}])}
+p.sig=true;p.issue=null;addXP(15);modal('Klarifikasi berhasil','Dokter virtual melengkapi aturan pakai pada resep.',[{t:'Kembali',fn:rx}])}},{t:'Kembali',fn:pc}])}
+function ord0(){const pen=S.orders.map(o=>nm(o.k)+' (tiba '+Math.max(0,Math.ceil((o.eta-S.t)/60))+' jam lagi)').join(', ')||'tidak ada';
+modal('Order PBF',`Pesanan berjalan: ${pen}<br><small>Pengiriman bisa terlambat.</small>`,Object.keys(MEDS).map(k=>({t:`Pesan 20 ${nm(k)} — ${rp(MEDS[k].c*20)}`,d:S.money<MEDS[k].c*20,fn:()=>{pay(-MEDS[k].c*20);S.orders.push({k,eta:S.t+120+(Math.random()<.3?180:0)});toast('Pesanan dikirim ke PBF');save();ord()}})).concat([{t:'Tutup'}]))}
+function fin0(){modal('Keuangan',`Kas: ${rp(S.money)}<br>Pendapatan hari ini: ${rp(S.inc)}<br>Pengeluaran hari ini: ${rp(S.exp)}<br>Reputasi: ${Math.round(S.rep)}`,[{t:'Kembali',fn:pc}])}
+function shelf0(){const n=Object.values(S.inv).reduce((a,b)=>a+b,0);modal('Rak Obat',`Tas: ${n}/6 item. Stok berkurang saat obat diambil.`,Object.keys(MEDS).map(k=>({t:`${nm(k)} — ${MEDS[k].f} • stok ${S.stock[k]}${S.stock[k]<6?' ⚠ rendah':''} • FEFO: ED hari ${edOf(k)}`,d:S.stock[k]<1,fn:()=>{if(n>=6){toast('Tas penuh');return}S.stock[k]--;takeB(k);S.inv[k]=(S.inv[k]||0)+1;toast('Mengambil '+nm(k)+' (batch ED terdekat)');shelf()}})).concat([{t:'Tutup'}]))}
+function inv(){const l=Object.keys(S.inv).filter(k=>S.inv[k]>0);modal('Inventory',l.length?l.map(k=>`${nm(k)} × ${S.inv[k]}`).join('<br>'):'Tas kosong.',[{t:'Tutup'},{t:'Kembalikan semua ke rak',d:!l.length,fn:()=>{l.forEach(k=>{S.stock[k]+=S.inv[k];addB(k,S.inv[k])});S.inv={};toast('Obat dikembalikan ke rak');close()}}])}
+function rest(){modal('Kursi Istirahat','Istirahat 30 menit waktu game untuk memulihkan energi?',[{t:'Istirahat',fn:()=>{S.en=100;S.t+=30;save();toast('Energi pulih');close()}},{t:'Batal'}])}
+function lab0(){const st=['Bersihkan meja & alat','Timbang bahan','Gerus di mortir','Campur hingga homogen','Bagi ke kertas perkamen','Kemas & beri etiket'],o=shuf(st);let n=0,e=0;
+const go=()=>{if(n==6){const sc=Math.max(0,100-e*15);addXP(10+Math.round(sc/5));S.d.lab++;S.en=Math.max(0,S.en-8);claim();save();return modal('Hasil simulasi puyer',`Ketepatan prosedur: <b>${sc}/100</b> (kesalahan: ${e})<br><small>Simulasi pembelajaran, bukan instruksi pembuatan obat.</small>`,[{t:'Tutup'}])}
+modal('Simulasi Puyer (edukasi)',`Pilih langkah yang benar. Langkah ${n+1}/6`,o.filter(s=>st.indexOf(s)>=n).map(s=>({t:s,fn:()=>{if(s==st[n])n++;else{e++;toast('Urutan salah!')}go()}})).concat([{t:'Batal'}]))};go()}
+function mapM(){const r=SC.pl.x>1120?(SC.pl.y<215?'Ruang Konsultasi':SC.pl.y<425?'Kantor Administrasi':'Ruang Staf'):SC.pl.x<700?'Main Pharmacy Area':SC.pl.y<215?'Prescription Room':SC.pl.y<425?'Medicine Storage / Gudang':'Compounding Laboratory';
+modal('Peta Apotek',`Anda berada di: <b>${r}</b><br>• Main Pharmacy: kasir, rak, antrean, kursi<br>• Prescription Room: komputer (pintu atas kanan)<br>• Medicine Storage: rak gudang & penerimaan PBF<br>• Compounding Lab: meja racik<br><small>Ruang konsultasi, kantor admin, ruang staf: fase berikutnya.</small>`,[{t:'Tutup'}])}
+function taskM0(){modal('Daftar Misi',`Harian: layani 5 pasien (${S.d.pt}/5) & 1 simulasi racik (${S.d.lab}/1) — hadiah Rp50.000 +40 XP ${S.d.cl?'(selesai)':''}<br>Saat ini: ${obj()}`,[{t:'Tutup'}])}
+function menu(){modal('Menu',`Sensitivitas joystick: <input type="range" id="r1" min=".6" max="1.6" step=".1" value="${CFG.sens}"><br>Ukuran tombol: <input type="range" id="r2" min=".8" max="1.4" step=".1" value="${CFG.bs}">`,[{t:'Simpan permainan',fn:()=>{save();toast('Tersimpan');menu()}},{t:'Muat permainan',fn:()=>{const s=localStorage.getItem('plsave');if(!s)return toast('Belum ada data');S=Object.assign(def(),JSON.parse(s));close();SC.scene.restart()}},
+{t:'Ganti gaya rambut',fn:()=>{const c=['short','long','bun','hijab'];S.pal.style=c[(c.indexOf(S.pal.style||'short')+1)%4];mkChar(SC,'pl',S.pal);menu()}},{t:'Ganti warna kulit',fn:()=>{const c=['#f3d2b3','#e0ac7e','#c68b5b','#8d5a3b'];S.pal.skin=c[(c.indexOf(S.pal.skin||'#f1c9a0')+1)%4];mkChar(SC,'pl',S.pal);menu()}},{t:'Ganti warna rambut',fn:()=>{const c=['#3b2412','#222','#c9a227','#b5412b','#7a4bd0'];S.pal.hair=c[(c.indexOf(S.pal.hair)+1)%5];mkChar(SC,'pl',S.pal);menu()}},{t:'Ganti warna kemeja',fn:()=>{const c=['#2b7fd0','#2e9e7a','#e8833a','#c0467a'];S.pal.shirt=c[(c.indexOf(S.pal.shirt)+1)%4];mkChar(SC,'pl',S.pal);menu()}},
+{t:'Volume musik: '+(CFG.mv==null?3:CFG.mv)+'/5 (ketuk untuk ubah)',fn:()=>{CFG.mv=((CFG.mv==null?3:CFG.mv)+1)%6;musicVol();menu()}},{t:'Kualitas grafis: '+(CFG.q?'Hemat':'Normal'),fn:()=>{CFG.q=CFG.q?0:1;try{localStorage.setItem('plcfg',JSON.stringify(CFG))}catch(e){}applyQ();menu()}},{t:'Uji sistem (diagnostik)',fn:selfTest},{t:'Reset data (hapus semua)',fn:()=>{if(confirm('Hapus seluruh progres?')){localStorage.removeItem('plsave');S=def();close();SC.scene.restart()}}},{t:'Tutup'}]);
+$('r1').oninput=e=>{CFG.sens=+e.target.value;cfg()};$('r2').oninput=e=>{CFG.bs=+e.target.value;cfg()}}
+function cfg(){document.documentElement.style.setProperty('--bs',CFG.bs);try{localStorage.setItem('plcfg',JSON.stringify(CFG))}catch(e){}}
+// ===== PHASE 3: batch FEFO, penerimaan PBF, retur, karyawan, laporan mingguan =====
+function bt(){if(!S.bat){S.bat={};for(const k in MEDS){const s=S.stock[k],a=Math.min(5,s);S.bat[k]=[{q:a,ed:day()+2},{q:s-a,ed:day()+150}]}}return S.bat}
+const first=k=>bt()[k].filter(x=>x.q>0).sort((a,c)=>a.ed-c.ed)[0];
+function takeB(k){const b=first(k);if(b)b.q--}
+function edOf(k){const b=first(k);return b?b.ed:'-'}
+function addB(k,q,ed){const b=ed?null:first(k);b?b.q+=q:bt()[k].push({q,ed:ed||day()+150})}
+function recv(o){const n=S.up&&S.up.gud?30:20;S.stock[o.k]+=n;addB(o.k,n,day()+(o.sh||150))}
+function expire(){const m=[];for(const k in MEDS){bt()[k]=bt()[k].filter(b=>{if(b.ed<day()&&b.q>0){S.stock[k]-=b.q;S.ret.push({k,q:b.q});m.push(nm(k));return false}return b.q>0||b.ed>=day()})}if(m.length)toast('Obat kedaluwarsa masuk karantina retur: '+m.join(', '))}
+const SUP=[{n:'PBF Sehat Jaya (murah, lambat)',m:1,t:180,sh:200},{n:'PBF Cepat Medika (cepat, +25%)',m:1.25,t:90,sh:120}];
+function ord(){const s=SUP[S.sup],pen=S.orders.map(o=>nm(o.k)+' - ±'+Math.max(0,Math.ceil((o.eta-S.t)/60))+' jam').join('<br>')||'tidak ada';
+const rc=S.rcv.map((o,i)=>({t:'Terima & periksa paket: 20 '+nm(o.k),fn:()=>{recv(o);S.rcv.splice(i,1);addXP(8);toast('Jumlah & ED dicek, masuk stok');save();ord()}}));
+const rt=S.ret.length?[{t:'Retur kedaluwarsa ('+S.ret.reduce((a,r)=>a+r.q,0)+' unit)',fn:()=>{const v=S.ret.reduce((a,r)=>a+r.q*MEDS[r.k].c*.5,0);S.ret=[];pay(v);toast('Retur diterima, kredit '+rp(v));save();ord()}}]:[];
+modal('Penerimaan & Order PBF',`Pesanan berjalan:<br>${pen}<br><small>Pengiriman bisa terlambat (±30%). Obat kedaluwarsa tidak boleh dijual: retur ke PBF.</small>`,[...rc,...rt,{t:'Pemasok: '+s.n+' (ganti)',fn:()=>{S.sup=1-S.sup;ord()}},...Object.keys(MEDS).map(k=>{const c=Math.round(MEDS[k].c*20*s.m);return{t:`Pesan 20 ${nm(k)} — ${rp(c)}`,d:S.money<c,fn:()=>{pay(-c);S.orders.push({k,s:S.sup,sh:s.sh,eta:S.t+s.t+(Math.random()<.3?180:0)});toast('Pesanan dikirim ke '+s.n);save();ord()}}}),{t:'Tutup'}])}
+function fin(){const h=S.hist,mx=Math.max(1,...h.map(x=>Math.max(x.i,x.e))),bar=(v,c)=>`<span style="color:${c}">${'█'.repeat(Math.round(v/mx*12))}</span> ${rp(v)}`;
+const rows=h.map(x=>`H${x.d} ${bar(x.i,'#2e9e7a')}<br>&nbsp;&nbsp;&nbsp;&nbsp;${bar(x.e,'#e8833a')}`).join('<br>')||'<i>Belum ada riwayat. Selesaikan satu hari.</i>';
+modal('Keuangan',`Kas: ${rp(S.money)}<br>Hari ini: masuk ${rp(S.inc)}, keluar ${rp(S.exp)}<br>Reputasi: ${Math.round(S.rep)}<hr><b>7 hari terakhir</b> (hijau masuk, oranye keluar)<br>${rows}<br>Laba bersih: <b>${rp(h.reduce((a,x)=>a+x.i-x.e,0))}</b>`,[{t:'Kembali',fn:pc}])}
+const ROLES={gudang:['Petugas Gudang',120000,'menerima paket PBF otomatis',2],kasir:['Kasir',100000,'pasien lebih sabar mengantre',1],apt:['Apoteker Pendamping',250000,'+3 XP tiap pasien dilayani',3]};
+const ZN={kasir:[230,410,170,190],gudang:[760,1000,300,400],apt:[100,560,100,180]};
+function emp(){modal('Karyawan',`Gaji dipotong tiap pergantian hari.<br>${S.emp.map(e=>'• '+e.n+' — '+ROLES[e.r][0]+' ('+rp(e.s)+'/hari)').join('<br>')||'Belum ada karyawan.'}`,Object.keys(ROLES).filter(r=>!S.emp.some(e=>e.r==r)).map(r=>({t:`Rekrut ${ROLES[r][0]} — ${rp(ROLES[r][1])}/hari (${ROLES[r][2]}) [Lv${ROLES[r][3]+1}]`,d:S.money<ROLES[r][1]*3||lvl()<ROLES[r][3],fn:()=>{const e={n:NAMES[Math.floor(Math.random()*10)]+' (fiktif)',r,s:ROLES[r][1],pal:Math.floor(Math.random()*4)};S.emp.push(e);addEmpSp(e);save();emp()}})).concat([{t:'Kembali',fn:pc}]))}
+function addEmpSp(e){if(!SC)return;const z=ZN[e.r];SC.ew=SC.ew||[];SC.ew.push({s:SC.add.sprite(z[0],z[2],'e'+e.pal+'d0').setScale(2).setOrigin(.5,1),e,g:null,w:0})}
+function empUp(sc,t,dt){(sc.ew||[]).forEach(w=>{const s=w.s,z=ZN[w.e.r];let mv=false,dir='d';if(w.g){const dx=w.g.x-s.x,dy=w.g.y-s.y,d=Math.hypot(dx,dy);if(d>3){s.x+=dx/d*40*dt/1000;s.y+=dy/d*40*dt/1000;mv=true;dir=Math.abs(dy)>Math.abs(dx)?(dy<0?'u':'d'):'s';s._l=dx<0}else{w.g=null;w.w=1500+Math.random()*2500}}else{w.w-=dt;if(w.w<=0)w.g={x:z[0]+Math.random()*(z[1]-z[0]),y:z[2]+Math.random()*(z[3]-z[2])}}setSp(s,'e'+w.e.pal,dir,mv,t,200);s.setDepth(s.y)})}
+// ===== PHASE 4: laboratorium, 6 simulasi peracikan, pemilihan alat, penilaian kualitas =====
+const LAB=[
+{n:'Puyer',t:['Mortir','Stamper','Timbangan','Spatula','Kertas perkamen'],x:['Beaker glass','Gelas ukur','Cawan penguap'],s:['Cuci tangan & siapkan alat bersih','Timbang bahan (simulasi)','Gerus di mortir','Campur hingga homogen','Bagi ke kertas perkamen','Kemas & beri etiket'],q:['Serbuk tampak belum homogen (ada bercak warna). Tindakan?','Campur ulang sampai homogen lalu periksa lagi','Serahkan saja, pasien bisa mengocok sendiri','Tambahkan bahan lain agar warnanya rata']},
+{n:'Kapsul',t:['Timbangan','Spatula','Mortir','Cangkang kapsul','Alat pengisi kapsul'],x:['Gelas ukur','Beaker glass','Pot salep'],s:['Siapkan alat bersih','Timbang bahan (simulasi)','Gerus & homogenkan serbuk','Isi cangkang kapsul','Tutup & bersihkan kapsul','Kemas & beri etiket'],q:['Bobot antar kapsul tampak tidak seragam. Tindakan?','Periksa keseragaman, perbaiki, baru serahkan','Serahkan karena tampak mirip','Buang etiket agar tidak ketahuan']},
+{n:'Salep',t:['Mortir','Stamper','Spatula','Timbangan','Pot salep'],x:['Gelas ukur','Cangkang kapsul','Pipet'],s:['Siapkan alat bersih','Timbang basis salep (simulasi)','Haluskan bahan aktif','Campur bertahap hingga homogen','Masukkan ke pot salep','Beri etiket'],q:['Salep masih terasa kasar/berbutir. Tindakan?','Gerus dan campur lagi sampai halus merata','Serahkan, nanti juga halus sendiri','Tambah bahan aktif lebih banyak']},
+{n:'Larutan',t:['Gelas ukur','Beaker glass','Batang pengaduk','Botol bersih','Timbangan'],x:['Stamper','Cangkang kapsul','Kertas perkamen'],s:['Siapkan alat bersih','Ukur pelarut (simulasi)','Larutkan bahan sambil diaduk','Periksa kejernihan','Pindahkan ke botol bersih','Beri etiket'],q:['Larutan masih keruh dan ada endapan. Tindakan?','Aduk/larutkan lagi dan periksa; bila tetap keruh, evaluasi ulang','Serahkan, endapan tidak masalah','Saring seadanya tanpa memeriksa']},
+{n:'Pengenceran',t:['Gelas ukur','Beaker glass','Batang pengaduk','Pipet'],x:['Mortir','Spatula','Kertas perkamen'],s:['Siapkan alat & rasio (simulasi)','Ukur larutan stok','Tambahkan pelarut bertahap','Aduk homogen','Periksa volume akhir','Beri etiket'],q:['Volume akhir melewati tanda batas. Tindakan?','Ulangi pengenceran dengan benar','Biarkan, selisih kecil tidak penting','Buang sebagian secara acak']},
+{n:'Pengemasan & Etiket',t:['Plastik klip/sachet','Printer etiket','Pulpen','Botol/pot'],x:['Mortir','Timbangan','Batang pengaduk'],s:['Cocokkan nama pasien & resep','Cek jenis dan jumlah obat','Masukkan ke kemasan sesuai sediaan','Tempel etiket (nama, aturan pakai, ED)','Pemeriksaan akhir','Serahkan dengan informasi'],q:['Nama pada etiket berbeda dengan resep. Tindakan?','Tahan, perbaiki etiket, periksa ulang semua','Serahkan, pasien pasti tahu','Coret nama dengan pulpen']}];
+function lab(){modal('Laboratorium Racik','Pilih simulasi. Ini latihan pembelajaran, bukan panduan pembuatan obat.',LAB.map((r,i)=>({t:r.n+(S.lm&&S.lm[r.n]?' — nilai terbaik '+S.lm[r.n]:''),fn:()=>labT(i)})).concat([{t:'Tutup'}]))}
+function labT(i,sel){sel=sel||[];const r=LAB[i],all=r.pool||(r.pool=shuf([...r.t,...r.x]));
+modal(r.n+': pilih alat',`Pilih semua alat yang diperlukan (${sel.length} dipilih). Alat yang salah mengurangi nilai.`,all.map(a=>({t:(sel.includes(a)?'✓ ':'')+a,fn:()=>labT(i,sel.includes(a)?sel.filter(z=>z!=a):[...sel,a])})).concat([{t:'Mulai prosedur',d:!sel.length,fn:()=>labS(i,sel)},{t:'Batal',fn:lab}]))}
+function labS(i,sel,n,e,o){const r=LAB[i];n=n||0;e=e||0;o=o||shuf(r.s);if(n==6)return labQ(i,sel,e);
+modal(r.n+': prosedur',`Langkah ${n+1}/6 • kesalahan ${e}`,o.filter(s=>r.s.indexOf(s)>=n).map(s=>({t:s,fn:()=>{if(s==r.s[n])labS(i,sel,n+1,e,o);else{toast('Urutan salah!');labS(i,sel,n,e+1,o)}}})))}
+function labQ(i,sel,e){const r=LAB[i],q=r.q,a=shuf([[q[1],100],[q[2],40],[q[3],0]]);
+modal(r.n+': pemeriksaan hasil',q[0],a.map(x=>({t:x[0],fn:()=>labR(i,sel,e,x[1])})))}
+function labR(i,sel,e,qs){const r=LAB[i],miss=r.t.filter(x=>!sel.includes(x)).length,extra=sel.filter(x=>!r.t.includes(x)).length;
+const al=Math.max(0,100-(miss+extra)*20),pr=Math.max(0,100-e*15),qu=Math.round(qs*(al>=60?1:.7)),tot=Math.round(al*.25+pr*.3+100*.15+qu*.3),g=tot>=85?'A — layak diserahkan':tot>=65?'B — perlu perbaikan kecil':'C — ulangi, belum layak diserahkan';
+S.lm=S.lm||{};S.lm[r.n]=Math.max(S.lm[r.n]||0,tot);const xp=Math.round((10+Math.round(tot/5))*(S.up&&S.up.lab?1.25:1));addXP(xp);if(tot>=65){S.d.lab++;wk('lab');claim()}if(tot>=85)S.rep=Math.min(100,S.rep+1);save();
+modal('Hasil: '+r.n,`Pemilihan alat: <b>${al}</b> (kurang ${miss}, salah ${extra})<br>Ketepatan prosedur: <b>${pr}</b> (kesalahan ${e})<br>Kelengkapan proses: <b>100</b><br>Kualitas hasil: <b>${qu}</b><hr>Nilai akhir <b>${tot}</b> — Grade ${g}<br>+${xp} XP<br><small>Simulasi pembelajaran, bukan instruksi pembuatan obat.</small>`,[{t:'Simulasi lain',fn:lab},{t:'Tutup'}])}
+// ===== PHASE 5: ensiklopedia, kasus klinis, random event, achievement, karier =====
+const ENC=[['Farmakologi','Ilmu tentang kerja obat dalam tubuh: farmakokinetika (nasib obat di tubuh) dan farmakodinamika (efek obat pada tubuh).','Farmakope Indonesia; WHO Model List of Essential Medicines'],
+['Farmakognosi','Ilmu tentang bahan obat dari alam (tumbuhan, hewan, mineral), termasuk identifikasi dan mutu simplisia.','Farmakope Indonesia'],
+['Farmasetika','Ilmu bentuk sediaan dan formulasi: tablet, kapsul, salep, larutan, serta stabilitas dan mutunya.','Farmakope Indonesia'],
+['Farmakokinetika','Proses ADME: absorpsi, distribusi, metabolisme, dan ekskresi obat. Kondisi hati, ginjal, dan usia dapat memengaruhinya.','WHO Model List of Essential Medicines'],
+['Farmakodinamika','Mekanisme obat berikatan dengan target (misalnya reseptor atau enzim) sehingga menimbulkan efek terapi maupun efek tak diinginkan.','Farmakope Indonesia'],
+['Farmakoterapi','Pemilihan terapi obat berbasis bukti dengan mempertimbangkan kondisi, alergi, dan obat lain pada pasien.','Permenkes No. 73 Tahun 2016'],
+['Farmasi klinis','Peran apoteker memastikan terapi aman dan efektif: pengkajian resep, pelayanan informasi obat, konseling, dan pemantauan terapi.','Permenkes No. 73 Tahun 2016'],
+['Kimia farmasi','Struktur, sifat fisikokimia, dan analisis bahan obat yang berkaitan dengan mutu dan stabilitas.','Farmakope Indonesia'],
+['Mikrobiologi','Mikroorganisme, sterilitas, dan resistensi antimikroba. Antibiotik hanya dengan resep dan digunakan sesuai arahan tenaga kesehatan.','PP No. 51 Tahun 2009; WHO'],
+['Interaksi obat','Satu obat, makanan, atau suplemen dapat mengubah efek obat lain. Periksa duplikasi terapi dan riwayat obat pasien sebelum menyerahkan.','Permenkes No. 73 Tahun 2016'],
+['Efek samping','Respons tak diinginkan terhadap obat. Pasien perlu tahu kapan harus menghubungi tenaga kesehatan; kejadian dapat dilaporkan melalui MESO.','Pedoman MESO (BPOM)'],
+['Penyimpanan obat','Simpan sesuai petunjuk kemasan, jauh dari anak-anak, terlindung dari panas dan lembap; terapkan FEFO dan pantau tanggal kedaluwarsa.','Permenkes No. 73 Tahun 2016']];
+function enc(){modal('Ensiklopedia Farmasi','Ringkasan edukatif. Rujuk dokumen asli untuk keputusan klinis nyata.',ENC.map(e=>({t:e[0],fn:()=>modal(e[0],e[1]+'<hr><small>Referensi: '+e[2]+'<br>Pembaruan konten: 5 Nov 2026</small>',[{t:'Daftar',fn:enc},{t:'Tutup'}])})).concat([{t:'Kembali',fn:pc}]))}
+const CASES=[
+{lv:'Beginner',t:'Pasien meminta antibiotik tanpa resep dokter untuk batuk pilek ringan.',a:[['Jelaskan antibiotik perlu resep dan tidak membantu banyak batuk pilek; sarankan periksa bila keluhan berlanjut',2,'Antibiotik adalah obat keras dan pemakaian tidak tepat memicu resistensi.'],['Berikan sebagian saja agar pasien puas',0,'Tetap melanggar ketentuan dan berisiko.'],['Berikan penuh karena pasien memaksa',-1,'Mengabaikan keselamatan dan aturan.']],r:'Permenkes No. 73/2016; PP No. 51/2009'},
+{lv:'Intermediate',t:'Pasien lansia membawa lima obat dan sering lupa jadwal minum.',a:[['Buat jadwal tertulis sesuai etiket, sarankan wadah pengingat, minta pasien mengulang penjelasan, hubungi dokter bila ragu',2,'Konseling dan alat bantu meningkatkan kepatuhan tanpa mengubah terapi.'],['Katakan minum semua sekaligus agar mudah',-1,'Jadwal ditentukan peresep, tidak boleh disederhanakan sepihak.'],['Serahkan tanpa penjelasan tambahan',0,'Kepatuhan rendah berisiko gagal terapi.']],r:'Permenkes No. 73/2016 (konseling, kepatuhan)'},
+{lv:'Advanced',t:'Pasien membawa resep obat flu kombinasi, lalu ingin membeli parasetamol terpisah.',a:[['Cek kandungan obat flu; bila sudah mengandung parasetamol, jelaskan risiko duplikasi dan tunda penjualan tambahan sampai dievaluasi',2,'Duplikasi terapi dapat meningkatkan risiko efek tak diinginkan.'],['Jual karena pasien meminta',-1,'Melewatkan pengkajian duplikasi.'],['Jual sambil berpesan hati-hati',0,'Pesan umum tidak cukup tanpa pengecekan kandungan.']],r:'Permenkes No. 73/2016 (pengkajian resep)'},
+{lv:'Professional',t:'Pasien yang sedang hamil menanyakan obat untuk keluhannya.',a:[['Tanyakan usia kehamilan dan obat lain yang dipakai, lalu sarankan konsultasi ke dokter sebelum memakai obat apa pun',2,'Keamanan obat pada kehamilan perlu evaluasi individual oleh tenaga kesehatan.'],['Berikan obat yang biasa dipakai umum',-1,'Tidak aman tanpa evaluasi.'],['Sarankan membeli sendiri secara daring',-1,'Mengabaikan keselamatan ibu dan janin.']],r:'Permenkes No. 73/2016 (konseling dan rujukan)'}];
+function clin(){S.cc=S.cc||{};modal('Kasus Klinis','Analisis pasien dan pilih tindakan paling aman. Skenario fiktif untuk belajar.',CASES.map((c,i)=>({t:c.lv+' - '+c.t.slice(0,30)+'... '+(S.cc[i]!==undefined?' ✓':''),fn:()=>{const a=shuf(c.a);modal('Kasus '+c.lv,c.t,a.map(x=>({t:x[0],fn:()=>{S.cc[i]=Math.max(S.cc[i]===undefined?-9:S.cc[i],x[1]);const xp=Math.max(0,[20,35,50,70][['Beginner','Intermediate','Advanced','Professional'].indexOf(c.lv)]*(x[1]==2?1:x[1]==0?.5:0));addXP(xp);if(x[1]==2)wk('cc');save();modal('Evaluasi',(x[1]==2?'<b>Tepat.</b> ':x[1]==0?'<b>Kurang tepat.</b> ':'<b>Berisiko.</b> ')+x[2]+'<br>+'+xp+' XP<br><small>Referensi: '+c.r+'</small>',[{t:'Kasus lain',fn:clin},{t:'Tutup'}])}})))}})).concat([{t:'Kembali',fn:pc}]))}
+const EV=[
+{ok:()=>true,t:'Pasien ramai',x:'Beberapa pasien datang bersamaan.',o:[['Layani bergiliran dan tetap teliti',()=>{SC.spawn();SC.spawn();addXP(10);return'Antrean padat, setiap resep tetap diperiksa. +10 XP'}],['Bagikan nomor antrean dan estimasi waktu',()=>{SC.spawn();S.rep=Math.min(100,S.rep+1);return'Pasien menghargai kejelasan. +1 reputasi'}]]},
+{ok:()=>S.orders.length>0,t:'Pengiriman PBF terlambat',x:'PBF mengabarkan pengiriman mundur 2 jam.',pre:()=>S.orders.forEach(o=>o.eta+=120),o:[['Minta prioritas (Rp20.000)',()=>{pay(-20000);S.orders.forEach(o=>o.eta-=90);return'Pengiriman dipercepat 90 menit.'}],['Tunggu dan atur stok yang ada',()=>{addXP(5);return'Kamu menata prioritas stok. +5 XP'}]]},
+{ok:()=>true,t:'Keluhan pasien',x:'Pasien kemarin mengeluh penjelasan obat kurang jelas.',o:[['Dengarkan, minta maaf, jelaskan ulang',()=>{S.rep=Math.min(100,S.rep+2);addXP(10);return'Pasien tenang. +2 reputasi, +10 XP'}],['Bantah keluhannya',()=>{S.rep=Math.max(0,S.rep-3);return'Pasien makin kecewa. -3 reputasi'}],['Abaikan',()=>{S.rep=Math.max(0,S.rep-2);return'Keluhan tak tertangani. -2 reputasi'}]]},
+{ok:()=>true,t:'Gangguan komputer',x:'Sistem apotek hang.',o:[['Restart sistem (15 menit)',()=>{S.t+=15;return'Sistem pulih setelah 15 menit.'}],['Catat manual lalu input ulang',()=>{S.t+=8;addXP(5);return'Pencatatan manual teliti. +5 XP'}]]},
+{ok:()=>Object.keys(MEDS).some(k=>{const b=first(k);return b&&b.ed<=day()+2}),t:'Obat mendekati kedaluwarsa',x:'Ada batch dengan ED sangat dekat.',o:[['Susun ulang rak FEFO dan beri penanda',()=>{addXP(10);return'Batch terdekat dipakai lebih dulu. +10 XP'}],['Biarkan saja',()=>{S.rep=Math.max(0,S.rep-1);return'Obat berpotensi kedaluwarsa sebelum terpakai. -1 reputasi'}]]},
+{ok:()=>day()>=2,t:'Inspeksi simulasi',x:'Petugas inspeksi (fiktif) memeriksa apotekmu.',o:[['Hadapi inspeksi',()=>{if(S.ret.length){S.rep=Math.max(0,S.rep-3);return'Temuan: obat kedaluwarsa belum diretur. Segera retur ke PBF. -3 reputasi'}addXP(30);S.rep=Math.min(100,S.rep+3);return'Stok tertata, tidak ada obat kedaluwarsa. +30 XP, +3 reputasi'}]]},
+{ok:()=>S.emp.length>0,t:'Karyawan tidak masuk',x:'Salah satu karyawan berhalangan hadir.',o:[['Ambil alih tugasnya',()=>{addXP(10);return'Kamu mengerjakan tugas tambahan. +10 XP'}],['Cari pengganti harian (Rp50.000)',()=>{pay(-50000);return'Pengganti sudah dipanggil.'}]]},
+{ok:()=>Object.keys(MEDS).some(k=>S.stock[k]<3),t:'Stok hampir kosong',x:'Pasien menanyakan obat yang stoknya menipis.',o:[['Jelaskan jujur dan sarankan alternatif/rujukan',()=>{S.rep=Math.min(100,S.rep+1);return'Pasien terbantu. +1 reputasi'}],['Janjikan tersedia besok tanpa memesan',()=>{S.rep=Math.max(0,S.rep-2);return'Janji tak terpenuhi. -2 reputasi'}]]}];
+function rEvent(){const e=pick(EV.filter(x=>x.ok()));if(e.pre)e.pre();modal('Event: '+e.t,e.x,e.o.map(o=>({t:o[0],fn:()=>{const r=o[1]();save();modal('Hasil keputusan',r,[{t:'Lanjut'}])}})))}
+function pick(a){return a[Math.floor(Math.random()*a.length)]}
+const ACH=[['Pelayanan pertama','Layani 1 pasien',()=>S.tot>=1],['Pelayan setia','Layani 20 pasien',()=>S.tot>=20],['Peracik andal','Raih nilai lab 85+',()=>Object.values(S.lm||{}).some(v=>v>=85)],['Apoteker tepercaya','Reputasi 80',()=>S.rep>=80],['Tim solid','Punya 2 karyawan',()=>S.emp.length>=2],['Pembelajar klinis','Selesaikan 4 kasus klinis',()=>Object.keys(S.cc||{}).length>=4]];
+function chkAch(){if(!S||!S.emp)return;S.ach=S.ach||{};ACH.forEach(a=>{if(!S.ach[a[0]]&&a[2]()){S.ach[a[0]]=1;addXP(25);S.money+=10000;toast('Pencapaian: '+a[0]+' (+25 XP, +Rp10.000)')}})}
+function career(){const l=lvl(),nx=LV[l+1];modal('Karier & Pencapaian',`<b>${TT[l]}</b> (Lv${l+1}) • XP ${S.xp}${nx?'/'+nx:' (maks)'}<br><small>Unlock: Lv2 rekrut Kasir • Lv3 Petugas Gudang • Lv4 Apoteker Pendamping</small><hr>${ACH.map(a=>(S.ach&&S.ach[a[0]]?'✅ ':'⬜ ')+a[0]+' — '+a[1]).join('<br>')}`,[{t:'Kembali',fn:pc}])}
+// ===== PHASE 5 (lanjutan): misi mingguan, kasus tambahan, event & achievement tambahan =====
+CASES.push(
+{lv:'Beginner',t:'Pasien bertanya apakah obat resepnya boleh dibagi ke anggota keluarga yang gejalanya sama.',a:[['Jelaskan obat resep ditujukan untuk pasien tertentu; sarankan anggota keluarga diperiksa tenaga kesehatan',2,'Kondisi, alergi, dan obat lain tiap orang berbeda sehingga berbagi obat berisiko.'],['Boleh, asal gejalanya sama',-1,'Gejala yang sama belum tentu penyebab dan kondisinya sama.'],['Tidak perlu dijelaskan, obat tidak berbahaya',0,'Kesempatan edukasi terlewat.']],r:'Permenkes No. 73/2016 (konseling)'},
+{lv:'Intermediate',t:'Pasien merasa sudah membaik dan ingin berhenti minum obat sebelum habis.',a:[['Tanyakan alasannya, jelaskan pentingnya mengikuti arahan peresep, dan sarankan menghubungi dokter sebelum menghentikan obat',2,'Keputusan berhenti terapi perlu dikonsultasikan agar hasil terapi tercapai.'],['Katakan berhenti saja kalau sudah enak',-1,'Berisiko gagal terapi atau kambuh.'],['Katakan wajib habis tanpa penjelasan',0,'Edukasi kurang; pasien perlu memahami alasannya.']],r:'Permenkes No. 73/2016 (kepatuhan terapi)'},
+{lv:'Advanced',t:'Tulisan pada resep ambigu sehingga nama obat bisa dibaca dua cara.',a:[['Tahan penyiapan dan klarifikasi ke dokter penulis resep sebelum melanjutkan',2,'Resep yang tidak jelas harus diklarifikasi untuk mencegah kesalahan pemberian obat.'],['Pilih yang paling sering dipakai',-1,'Menebak adalah sumber medication error.'],['Tanyakan ke pasien dan ikuti jawabannya',0,'Pasien bukan sumber verifikasi resep.']],r:'Permenkes No. 73/2016 (pengkajian resep, klarifikasi)'},
+{lv:'Professional',t:'Pasien meminta obat bebas untuk keluhan yang disertai sesak napas mendadak dan nyeri dada.',a:[['Anggap sebagai tanda bahaya: sarankan segera ke fasilitas gawat darurat dan jangan menunda dengan obat bebas',2,'Tanda bahaya memerlukan evaluasi medis segera; apoteker merujuk.'],['Berikan obat bebas dulu dan lihat perkembangan',-1,'Menunda penanganan dapat berbahaya.'],['Sarankan istirahat di rumah',-1,'Tidak aman untuk keluhan berat.']],r:'Permenkes No. 73/2016 (rujukan)'});
+EV.push({ok:()=>true,t:'Lonjakan permintaan',x:'Banyak pasien datang meminta obat bebas sekaligus.',pre:()=>{SC.spawn();SC.spawn()},o:[['Tetap lakukan skrining keluhan dan rujuk bila perlu',()=>{addXP(12);return'Pelayanan aman meski ramai. +12 XP'}],['Layani cepat tanpa bertanya',()=>{S.rep=Math.max(0,S.rep-2);return'Risiko salah pilih obat. -2 reputasi'}]]},
+{ok:()=>true,t:'Kesalahan administrasi',x:'Ada selisih pada catatan kas harian.',o:[['Telusuri dan koreksi catatan',()=>{addXP(10);return'Selisih ditemukan dan dikoreksi. +10 XP'}],['Abaikan selisih',()=>{pay(-30000);return'Selisih terbawa ke laporan. Kerugian Rp30.000'}]]});
+const WM=[['pt',25,'Layani 25 pasien',150000,100],['lab',5,'Selesaikan 5 simulasi racik (nilai B+)',100000,80],['cc',2,'Jawab tepat 2 kasus klinis',100000,80]];
+function wk(k){const n=Math.floor((day()-1)/7);if(!S.w||S.w.n!==n)S.w={n,pt:0,lab:0,cc:0,c:{}};S.w[k]++;WM.forEach(m=>{if(S.w[m[0]]>=m[1]&&!S.w.c[m[0]]){S.w.c[m[0]]=1;S.wcl=(S.wcl||0)+1;pay(m[3]);addXP(m[4]);toast('Misi mingguan selesai: '+m[2]+' (+'+rp(m[3])+')')}})}
+function taskM(){const n=Math.floor((day()-1)/7),w=S.w&&S.w.n===n?S.w:{pt:0,lab:0,cc:0,c:{}};
+modal('Daftar Misi',`<b>Harian</b> ${S.d.cl?'(selesai)':''}<br>${S.d.pt>=5?'✅':'⬜'} Layani 5 pasien (${S.d.pt}/5)<br>${S.d.lab>=1?'✅':'⬜'} 1 simulasi racik (${S.d.lab}/1)<br><small>Hadiah Rp50.000 +40 XP</small><hr><b>Mingguan</b> (minggu ke-${n+1})<br>${WM.map(m=>(w.c[m[0]]?'✅':'⬜')+' '+m[2]+' ('+Math.min(w[m[0]],m[1])+'/'+m[1]+') — '+rp(m[3])+' +'+m[4]+' XP').join('<br>')}<hr>Saat ini: ${obj()}`,[{t:'Tutup'}])}
+ACH.push(['Ahli klinis','Selesaikan 8 kasus klinis',()=>Object.keys(S.cc||{}).length>=8],['Juragan apotek','Kas Rp1.000.000',()=>S.money>=1000000],['Disiplin mingguan','Selesaikan 1 misi mingguan',()=>(S.wcl||0)>=1]);
+// ===== PHASE 6 + desain karakter baru =====
+const sh=(h,a)=>{const n=parseInt(h.slice(1),16),c=v=>Math.max(0,Math.min(255,v));return'#'+((1<<24)|(c((n>>16)+a)<<16)|(c(((n>>8)&255)+a)<<8)|c((n&255)+a)).toString(16).slice(1)};
+const PAL=[{skin:'#f1c9a0',hair:'#2a1c14',style:'short',top:'#5f9e7a',bot:'#4a5a78'},{skin:'#e0ac7e',hair:'#1c1412',style:'long',top:'#d9784a',bot:'#3b4a5a'},{skin:'#c68b5b',hair:'#2a1c14',style:'hijab',hij:'#a65e7c',top:'#7a4f6a',bot:'#4b3a4f',dress:1},{skin:'#f3d2b3',hair:'#cfcfd4',style:'short',top:'#b58a52',bot:'#5a5248',acc:'glasses'},{skin:'#8d5a3b',hair:'#1a1210',style:'bun',top:'#e3b565',bot:'#3f4a3c'},{skin:'#e0ac7e',hair:'#4a3020',style:'cap',cap:'#5b8fa8',top:'#c9714a',bot:'#4a5a78'},{skin:'#f3d2b3',hair:'#6a4a2a',style:'long',top:'#7a9a5f',bot:'#5a4a3a',dress:1},{skin:'#c68b5b',hair:'#cfcfd4',style:'short',top:'#8a6f9a',bot:'#4a4a52',acc:'glasses'}];
+const EPAL=[{coat:'#f2f7f4',shirt:'#3aa6a0',skin:'#e0ac7e',hair:'#2a1c14',style:'long'},{coat:'#f2f7f4',shirt:'#5b8fa8',skin:'#f1c9a0',hair:'#3b2412',style:'short'},{coat:'#f2f7f4',shirt:'#d9784a',skin:'#c68b5b',hair:'#2a1c14',style:'hijab',hij:'#f2f7f4'},{coat:'#f2f7f4',shirt:'#8a6f9a',skin:'#8d5a3b',hair:'#1a1210',style:'bun'}];
+function mkChar(sc,k,p){const sk=p.skin||'#f1c9a0',st=p.style||'short',hr=p.hair||'#2a1c14',O='#2b2030',ph=!p.top,body=ph?(p.coat||'#fff'):p.top,inner=p.shirt,bot=p.bot||'#3a3556',shoe=p.shoe||'#3a2a24',hij=p.hij||p.shirt||'#a65e7c';
+['d','u','s'].forEach(dir=>[0,1].forEach(f=>{const key=k+dir+f;if(sc.textures.exists(key))sc.textures.remove(key);const t=sc.textures.createCanvas(key,16,24),c=t.getContext('2d'),R=(q,x,y,w,h)=>{c.fillStyle=q;c.fillRect(x,y,w,h)},s=dir=='s',a=f;
+if(s){R(sh(bot,-28),6-a,17,3,5);R(shoe,6-a,22,3,2);R(bot,7+a,17,3,5);R(shoe,7+a,22,3,2)}else{R(bot,5,17,3,5-a);R(shoe,5,22-a,3,2);R(bot,8,17,3,4+a);R(shoe,8,21+a,3,2)}
+if(p.dress){R(p.top,4,17,8,4);R(sh(p.top,-22),10,17,2,4)}
+if(s){R(body,5,10,6,7);R(sh(body,-22),9,10,2,7);R(sh(body,-10),7,11+a,2,5);R(sk,7,16+a,2,1)}
+else{R(body,4,10,8,7);R(sh(body,-22),10,10,2,7);R(body,2,11+a,2,5);R(sk,2,16+a,2,1);R(sh(body,-12),12,11+(1-a),2,5);R(sk,12,16+(1-a),2,1);
+if(ph&&dir=='d'){R(inner,6,10,4,3);R(inner,7,13,2,4);R(sh(body,-30),6,10,1,4);R(sh(body,-30),9,10,1,4);R('#4f9a78',10,13,2,2);R(sh(body,-14),4,14,3,2);R('#4a5a6a',5,10,1,3)}}
+R(sh(sk,-20),6,9,4,1);
+if(dir=='u'){R(st=='hijab'?hij:hr,4,1,8,8);if(st=='hijab')R(hij,3,8,10,3);if(st=='bun')R(hr,5,0,5,2)}
+else if(s){R(sk,5,2,7,7);if(st=='hijab'){R(hij,4,1,8,9);R(sk,9,3,3,5)}else{R(hr,4,1,8,3);R(hr,4,3,3,5);if(st=='long')R(hr,4,3,3,8);if(st=='bun')R(hr,3,0,4,3);if(st=='cap'){R(p.cap,4,1,8,2);R(p.cap,10,3,3,1)}}R(O,10,5,1,2);R(sh(sk,-30),12,5,1,1)}
+else{R(sk,4,2,8,7);if(st=='hijab'){R(hij,3,1,10,9);R(hij,3,9,10,2);R(sk,5,3,6,5)}else{R(hr,3,1,10,3);R(hr,3,3,1,3);R(hr,12,3,1,3);if(st=='long'){R(hr,3,3,2,7);R(hr,11,3,2,7)}if(st=='bun')R(hr,5,0,5,2);if(st=='cap'){R(p.cap,3,1,10,3);R(sh(p.cap,-30),3,4,10,1)}}
+R(O,6,5,1,2);R(O,9,5,1,2);R('#b5645a',7,7,2,1);R('#f0a29a',5,7,1,1);R('#f0a29a',10,7,1,1);if(p.acc=='glasses'){R('#5b4a3a',5,4,3,1);R('#5b4a3a',5,7,3,1);R('#5b4a3a',9,4,3,1);R('#5b4a3a',8,5,1,1)}}
+const d=c.getImageData(0,0,16,24),q=d.data,o=[];for(let y=0;y<24;y++)for(let x=0;x<16;x++){if(q[(y*16+x)*4+3])continue;if([[1,0],[-1,0],[0,1],[0,-1]].some(([dx,dy])=>{const X=x+dx,Y=y+dy;return X>=0&&Y>=0&&X<16&&Y<24&&q[(Y*16+X)*4+3]}))o.push([x,y])}o.forEach(([x,y])=>R(O,x,y,1,1));t.refresh()}))}
+function ex(){S.rooms=S.rooms||{};S.up=S.up||{};S.dec=S.dec||{};for(const k in MEDS){if(S.stock[k]===undefined)S.stock[k]=16;if(S.bat&&!S.bat[k])S.bat[k]=[{q:S.stock[k],ed:day()+150}]}}
+const RX=[{id:'kons',n:'Ruang Konsultasi',y:16,h:194,c:[0xefe6fa,0xe3d9f5],cost:400000,g:[90,150]},{id:'adm',n:'Kantor Administrasi',y:226,h:194,c:[0xf5ecd8,0xebdfc4],cost:600000,g:[290,350]},{id:'staf',n:'Ruang Staf',y:436,h:188,c:[0xfbe9de,0xf4d9c8],cost:300000,g:[500,560]}];
+const UP=[{k:'gud',n:'Perluas gudang (paket PBF 30 unit, harga tetap)',c:500000},{k:'lab',n:'Alat lab premium (+25% XP simulasi racik)',c:400000},{k:'ac',n:'Interior & kursi tunggu nyaman (pasien lebih sabar)',c:350000}];
+const DEC=[{k:'plant',n:'Tanaman hias',c:60000,x:80,y:560},{k:'rug',n:'Karpet ruang tunggu',c:90000,x:500,y:430},{k:'poster',n:'Poster edukasi kesehatan',c:70000,x:600,y:40},{k:'lamp',n:'Lampu berdiri',c:80000,x:660,y:300}];
+function FX(sc,x,y,w,h,c,l){const r=sc.add.rectangle(x+w/2,y+h/2,w,h,c).setStrokeStyle(2,0x3a3427);sc.solid.add(r);if(l!==undefined){r.setAlpha(0);drawObj(sc,x,y,w,h,l||'KURSI')}return r}
+function addO(sc,x,y,t,fn,r){sc.I.push({x,y,t,fn,r:r||80});const e=sc.add.text(x,y-34,'!',{fontSize:'16px',fontFamily:'monospace',color:'#fff',backgroundColor:'#d9784a'}).setOrigin(.5).setDepth(900);sc.tweens.add({targets:e,y:y-42,yoyo:true,repeat:-1,duration:600})}
+function buildExp(sc){ex();const g=sc.add.graphics().setDepth(0),WL=0x7a6552;FX(sc,1120,210,424,16,WL);FX(sc,1120,420,424,16,WL);FX(sc,1544,0,16,640,WL);FX(sc,1120,0,424,16,WL);sc.rx={};
+RX.forEach(r=>{for(let i=0;i<14;i++)for(let j=0;j<Math.ceil(r.h/32);j++){g.fillStyle((i+j)%2?r.c[0]:r.c[1]);g.fillRect(1120+i*32,r.y+j*32,32,32)}
+sc.rx[r.id]={blk:FX(sc,1104,r.g[0],16,r.g[1]-r.g[0],WL),ov:sc.add.rectangle(1332,r.y+r.h/2,424,r.h,0x5b5a50,.9).setDepth(800),tx:sc.add.text(1332,r.y+r.h/2,r.n+'\nTERKUNCI',{fontSize:'14px',fontFamily:'monospace',color:'#fff6e0',align:'center'}).setOrigin(.5).setDepth(801)};if(S.rooms[r.id])unlockRoom(sc,r.id,1)})}
+function unlockRoom(sc,id,q){const o=sc.rx[id];sc.solid.remove(o.blk,true,true);o.ov.destroy();o.tx.destroy();
+if(id=='kons'){FX(sc,1200,50,160,30,0xb98652,'MEJA KONSULTASI');FX(sc,1200,110,36,30,0xc9714a,'');FX(sc,1330,110,36,30,0xc9714a,'');addO(sc,1280,100,'Meja Konsultasi (kasus klinis)',clin,110)}
+if(id=='adm'){FX(sc,1200,270,160,30,0xb98652,'KEUANGAN');FX(sc,1460,250,50,70,0x8b6a4a,'ARSIP');addO(sc,1280,320,'Komputer Keuangan',fin,100);addO(sc,1485,335,'Arsip & Misi',taskM,80)}
+if(id=='staf'){FX(sc,1180,480,120,40,0xc9714a,'SOFA');FX(sc,1350,520,110,40,0xb98652,'MEJA MAKAN');FX(sc,1490,460,40,90,0x8b6a4a,'LEMARI');addO(sc,1240,550,'Sofa Istirahat',rest,95);addO(sc,1405,570,'Meja Makan',eat,95);addO(sc,1495,565,'Lemari Pribadi',career,80)}
+if(!q)toast(RX.find(r=>r.id==id).n+' terbuka!')}
+function eat(){S.en=Math.min(100,S.en+25);S.t+=20;toast('Makan siang selesai. Energi pulih.');save()}
+function drawDec(sc,d){const z=d.y;if(d.k=='plant'){sc.add.rectangle(d.x,d.y,16,12,0xb98652).setDepth(z);sc.add.circle(d.x,d.y-14,12,0x5f9e7a).setDepth(z+1);sc.add.circle(d.x-8,d.y-8,8,0x7bb88f).setDepth(z+2)}
+if(d.k=='rug'){sc.add.rectangle(d.x,d.y,150,70,0xd9784a).setStrokeStyle(3,0xf2c14e).setDepth(1);sc.add.rectangle(d.x,d.y,110,36,0xe8a06a).setDepth(1)}
+if(d.k=='poster'){sc.add.rectangle(d.x,d.y,56,36,0xfff6e0).setStrokeStyle(3,0x8b5e3c).setDepth(3);sc.add.rectangle(d.x,d.y,6,20,0x5f9e7a).setDepth(4);sc.add.rectangle(d.x,d.y,20,6,0x5f9e7a).setDepth(4)}
+if(d.k=='lamp'){sc.add.rectangle(d.x,d.y,4,40,0x6b5a48).setDepth(z);sc.add.rectangle(d.x,d.y-24,22,14,0xf2c14e).setDepth(z+1)}}
+function drawAllDec(sc){ex();DEC.forEach(d=>S.dec[d.k]&&drawDec(sc,d))}
+function reno(){ex();modal('Renovasi & Dekorasi',`Kas: ${rp(S.money)}<br><small>Perluas bangunan, tingkatkan fasilitas, dan percantik apotek.</small>`,[...RX.filter(r=>!S.rooms[r.id]).map(r=>({t:`Buka ${r.n} — ${rp(r.cost)}`,d:S.money<r.cost,fn:()=>{pay(-r.cost);S.rooms[r.id]=1;unlockRoom(SC,r.id);addXP(30);save();reno()}})),...UP.filter(u=>!S.up[u.k]).map(u=>({t:`${u.n} — ${rp(u.c)}`,d:S.money<u.c,fn:()=>{pay(-u.c);S.up[u.k]=1;toast('Fasilitas ditingkatkan');addXP(15);save();reno()}})),...DEC.filter(d=>!S.dec[d.k]).map(d=>({t:`Dekorasi: ${d.n} — ${rp(d.c)}`,d:S.money<d.c,fn:()=>{pay(-d.c);S.dec[d.k]=1;drawDec(SC,d);S.rep=Math.min(100,S.rep+1);save();reno()}})),{t:'Kembali',fn:pc}])}
+// ===== PHASE 7: detail objek, energi per pasien, optimasi, diagnostik =====
+function enCost(p){let c=2;if(p.age>=60)c++;if(p.issue)c+=2;if((p.meds||[]).length>1)c++;if(/infeksi/.test(p.comp))c++;return c}
+function applyQ(){if(!SC||!SC.ov)return;SC.ov.setVisible(!CFG.q);SC.tweens.getTweens().forEach(t=>CFG.q?t.pause():t.resume())}
+function drawObj(sc,x,y,w,h,l){const g=sc.add.graphics().setDepth(y+h),r=(c,a,b,ww,hh)=>g.fillStyle(c).fillRect(x+a,y+b,ww,hh);g.fillStyle(0x000000,.16).fillRect(x+2,y+h,w,3);
+const wd=0xe0bb86,wdl=0xf2d7a8,wdk=0x8b5e3c,wdd=0x5a3a1c,CL=[0x4f9a78,0xd9784a,0xe3b565,0x5b8fa8,0xf3ead2,0x9a6a8a];
+const desk=top=>{r(wd,0,0,w,top);r(wdl,0,0,w,2);r(0xa87a48,0,top,w,2);r(wdk,0,top+2,w,h-top-2);r(wdd,0,h-3,w,3)};
+switch(l){
+case'KASIR':desk(12);for(let i=8;i<w-20;i+=40)r(0x9a6a45,i,17,30,h-22);r(0x4a5560,20,-8,26,14);r(0x9be3c9,23,-6,20,6);r(0xcfd6dc,22,3,22,4);r(0x2d3640,62,2,10,8);r(0xf6f0e0,100,3,30,6);r(0xbfe5cf,160,0,10,12);r(0xd9784a,162,0,6,3);r(0x6b5a48,210,-2,2,14);r(0xf2c14e,204,-8,14,6);break;
+case'RAK':r(0x7a4f26,0,0,w,h);r(0xc99a62,2,2,w-4,h-4);for(let j=0;j<6;j++){const sy=j*33;r(0x7a4f26,0,sy+30,w,3);for(let k=0;k<4;k++){const c=CL[(j+k)%6],t=sy+(k%2?14:10);r(c,3+k*8,t,6,k%2?16:20);r(0xffffff,3+k*8,t+3,6,3)}}break;
+case'KOMPUTER':desk(18);r(0x2d3640,36,-14,36,24);r(0x4fa8d8,38,-12,32,18);r(0x9ad4f0,38,-12,12,3);r(0x2d3640,50,10,8,2);r(0xcfd6dc,30,14,48,6);for(let i=0;i<8;i++)r(0xa9b3ba,32+i*5,16,3,2);r(0xf6f0e0,84,15,6,5);r(0xd9784a,98,6,8,9);r(0xffffff,6,4,16,10);r(0xd7dde2,8,7,12,1);break;
+case'RAK GUDANG':r(0x7a4f26,0,0,w,h);r(0xd8c3a0,2,2,w-4,h-4);r(0x5a3a1c,0,13,w,2);for(let i=0;i<w-36;i+=38){r(0xc58b4e,i+3,2,34,11);r(0xe5b678,i+18,2,3,11);r(0xffffff,i+8,6,8,4);r(0xb07a40,i+3,15,34,11);r(0xe5b678,i+18,15,3,11)}break;
+case'PBF':r(0xa9743f,0,h-12,w,12);r(0x7a4f26,0,h-4,w,4);r(0xc58b4e,4,h-34,42,22);r(0xe5b678,22,h-34,4,22);r(0xb07a40,8,h-58,34,24);r(0xe5b678,22,h-58,4,24);r(0xc58b4e,12,h-80,26,22);r(0xf6f0e0,16,h-76,10,8);break;
+case'MEJA RACIK':r(0xe3efe9,0,0,w,36);r(0xffffff,0,0,w,2);r(0xa9c4b8,0,36,w,3);r(0x6fa89a,0,39,w,h-39);r(0x4a7a6e,0,h-3,w,3);r(0xf0ece4,14,16,18,10);r(0xd5cfc2,14,24,18,2);r(0xc9c2b4,28,6,3,16);r(0xcdeaf5,50,8,14,20);r(0x5bb8d8,51,17,12,10);r(0x9fd0e0,50,8,14,2);r(0x3a4a58,80,16,28,10);r(0xcfd6dc,84,10,20,5);r(0x9be3c9,88,19,12,4);r(0xcdeaf5,116,3,8,24);r(0xe3b565,117,14,6,12);r(0xcfd6dc,134,22,16,2);break;
+case'KURSI':r(0xa85a38,4,2,28,12);r(0xc9714a,4,12,28,20);r(0xe08a62,4,12,28,4);r(wdd,6,32,4,4);r(wdd,26,32,4,4);break;
+case'MEJA KONSULTASI':desk(12);r(0x2d3640,10,-8,20,14);r(0x4fa8d8,12,-6,16,9);r(0xf3ead2,70,3,24,6);r(0xffffff,110,2,16,9);r(0xd9784a,134,0,8,10);r(0x3a4a5a,146,4,10,2);break;
+case'KEUANGAN':desk(12);r(0x2d3640,12,-10,24,16);r(0x4fa8d8,14,-8,20,11);r(0x3a4a58,70,2,14,10);r(0x9be3c9,72,3,10,3);r(0xffffff,100,2,18,10);r(0xd7dde2,102,5,14,1);r(0xf2c14e,130,6,8,4);r(0xf2c14e,132,3,8,3);break;
+case'ARSIP':r(0x8a96a0,0,0,w,h);for(let i=0;i<3;i++){r(0x9fabb4,3,3+i*22,w-6,19);r(0x3a4a58,w/2-5,10+i*22,10,3);r(0xffffff,w/2-6,5+i*22,12,3)}break;
+case'SOFA':r(0xa85a38,0,0,w,16);r(0xc9714a,8,12,w-16,24);r(0xa85a38,0,10,10,28);r(0xa85a38,w-10,10,10,28);r(0xb0603f,w/2-1,14,2,20);r(wdd,4,36,5,4);r(wdd,w-9,36,5,4);r(0xe3b565,16,16,14,10);break;
+case'MEJA MAKAN':r(wd,0,0,w,26);r(wdl,0,0,w,2);r(wdk,0,26,w,6);r(wdd,4,32,6,8);r(wdd,w-10,32,6,8);r(0xffffff,14,6,18,12);r(0xd9784a,19,9,8,6);r(0xffffff,50,6,18,12);r(0x5f9e7a,55,9,8,6);r(0xbfe5cf,84,8,9,10);break;
+case'LEMARI':r(0x8b6a4a,0,0,w,h);r(0x9c7b58,2,2,w/2-3,h-4);r(0x9c7b58,w/2+1,2,w/2-3,h-4);r(0xe3b565,w/2-5,h/2-5,2,10);r(0xe3b565,w/2+3,h/2-5,2,10);for(let i=0;i<3;i++)r(0x6b4a2b,6,8+i*3,w/2-11,1);break;
+case'KULKAS':r(0xe9eef0,0,0,w,h);r(0x9fd0e0,4,6,w-8,40);for(let j=0;j<3;j++){r(0xcfd6dc,4,18+j*13,w-8,1);r(CL[j],7,10+j*13,5,8);r(CL[j+2],16,10+j*13,5,8);r(0xffffff,25,10+j*13,5,8)}r(0x8a96a0,w-7,10,3,22);r(0x5f9e7a,w/2-3,52,6,2);r(0x5f9e7a,w/2-1,50,2,6);r(0x6b7a80,0,h-4,w,4);break;
+case'ETALASE':r(wd,0,0,w,6);r(0xc99a62,0,6,w,h-6);for(let k=0;k<Math.floor((h-8)/14);k++){r(wdk,0,18+k*14,w,2);for(let i=2;i<w-12;i+=14)r(CL[((i/14+k)%6)|0],i,8+k*14,10,10)}break;
+case'TENSI':r(wd,0,6,w,8);r(wdk,0,14,w,16);r(0xe9eef0,10,-6,22,14);r(0x9be3c9,13,-3,12,5);r(0x5b8fa8,38,2,14,10);r(0x3a4a58,32,4,6,1);break;
+case'TIMBANGAN':r(0xcfd6dc,0,16,w,10);r(0x6b7a80,0,26,w,4);r(0x8a96a0,10,0,6,16);r(0x9be3c9,6,0,14,5);break;
+case'DISPENSER':r(0xe9eef0,0,0,w,h);r(0x6fb7d9,3,3,16,14);r(0xd9784a,5,20,4,4);r(0x5b8fa8,13,20,4,4);r(0xffffff,6,30,8,6);r(0x6b7a80,0,h-3,w,3);break;
+case'BANGKU':r(0x4a7a92,0,0,w,10);r(0x5b8fa8,0,8,w,14);r(wdd,4,22,5,8);r(wdd,w-9,22,5,8);for(let i=30;i<w-10;i+=30)r(0x4a7a92,i,9,2,12);break;
+case'SAMPAH':r(0x4a5a60,0,2,w,3);r(0x6b7a80,2,4,w-4,h-4);r(0x5f9e7a,w/2-2,9,4,4);break;
+case'BROSUR':r(wdk,0,0,w,h);for(let k=0;k<3;k++){r(0xfff6e0,2,3+k*11,w-4,8);r(CL[k+1],4,5+k*11,w-8,3)}break;
+default:r(0xb98652,0,0,w,h)}
+g.lineStyle(1,0x3a3427,.55).strokeRect(x+.5,y+.5,w-1,h-1)}
+function selfTest(){ex();const r=[],ok=(n,v)=>r.push((v?'\u2705 ':'\u274c ')+n);let sync=true;try{sync=Object.keys(MEDS).every(k=>bt()[k].reduce((a,b)=>a+Math.max(0,b.q),0)===S.stock[k])}catch(e){sync=false}
+let rt=false,st=false;try{rt=JSON.stringify(JSON.parse(JSON.stringify(S)))===JSON.stringify(S)}catch(e){}try{localStorage.setItem('pltest','1');localStorage.removeItem('pltest');st=true}catch(e){}
+ok('Objek interaktif punya fungsi ('+SC.I.length+')',SC.I.every(o=>typeof o.fn=='function'));ok('Stok tidak negatif',Object.keys(MEDS).every(k=>S.stock[k]>=0));ok('Batch FEFO sinkron dengan stok',sync);ok('Simpan & muat konsisten',rt);ok('Penyimpanan perangkat tersedia',st);ok('Energi dan reputasi dalam rentang',S.en>=0&&S.en<=100&&S.rep>=0&&S.rep<=100);ok('Uang valid',isFinite(S.money));ok('Antrean pasien konsisten',SC.q.every(p=>p.sp&&p.sp.active));ok('Ruangan baru: '+Object.keys(S.rooms).length+'/3 terbuka',true);
+modal('Uji sistem',r.join('<br>')+'<br><small>Diagnostik otomatis untuk memeriksa integrasi sistem.</small>',[{t:'Perbaiki data stok',fn:()=>{S.bat=null;bt();save();selfTest()}},{t:'Tutup'}])}
+setInterval(()=>{if(S&&SC&&!busy)save()},20000);addEventListener('pagehide',save);document.addEventListener('visibilitychange',()=>{if(document.hidden)save()});
+// ===== PHASE 8: obat & keluhan lebih banyak, apotek ramai, musik latar =====
+const MD={
+para:{cat:'Nyeri & Demam',cls:'Analgesik-antipiretik',ind:'Meredakan nyeri ringan-sedang dan menurunkan demam.',note:'Waspadai duplikasi paracetamol dari produk lain; ikuti aturan pada etiket.',rx:0},
+amox:{cat:'Antibiotik',cls:'Antibiotik golongan penisilin',ind:'Infeksi bakteri tertentu yang ditetapkan dokter; tidak untuk infeksi virus seperti flu.',note:'Hanya dengan resep. Tanyakan alergi penisilin dan ikuti lama terapi dari peresep.',rx:1},
+cet:{cat:'Alergi',cls:'Antihistamin generasi kedua',ind:'Rinitis alergi (bersin, hidung gatal) dan gatal akibat alergi.',note:'Dapat menimbulkan kantuk pada sebagian orang; hati-hati saat berkendara.',rx:0},
+ant:{cat:'Saluran Cerna',cls:'Antasida',ind:'Meredakan gejala nyeri ulu hati/maag akibat asam lambung.',note:'Beri jeda dengan obat lain sesuai petunjuk; bila sering berulang, sarankan periksa.',rx:0},
+vitc:{cat:'Suplemen',cls:'Vitamin',ind:'Memenuhi kebutuhan vitamin C; bukan obat penyembuh penyakit.',note:'Suplemen bukan pengganti makanan bergizi.',rx:0},
+ibu:{n:'Ibuprofen',f:'Tablet 400 mg',p:4000,c:2000,cat:'Nyeri & Demam',cls:'AINS (NSAID)',ind:'Nyeri, demam, dan peradangan ringan (nyeri otot/sendi, sakit gigi).',note:'Sebaiknya diminum bersama makanan; hati-hati pada riwayat maag, asma, atau gangguan ginjal.',rx:0},
+amb:{n:'Ambroksol',f:'Tablet 30 mg',p:4500,c:2300,cat:'Pernapasan',cls:'Mukolitik',ind:'Membantu mengencerkan dahak pada batuk berdahak.',note:'Perbanyak minum air putih; bila batuk berkepanjangan, sarankan periksa.',rx:0},
+gg:{n:'Gliseril guaiakolat (GG)',f:'Tablet 100 mg',p:2500,c:1200,cat:'Pernapasan',cls:'Ekspektoran',ind:'Membantu mengeluarkan dahak pada batuk berdahak.',note:'Perbanyak minum air putih.',rx:0},
+dxm:{n:'Dekstrometorfan',f:'Tablet 15 mg',p:3500,c:1800,cat:'Pernapasan',cls:'Antitusif',ind:'Meredakan batuk kering yang tidak berdahak.',note:'Bukan untuk batuk berdahak; waspadai penyalahgunaan dan penggunaan pada anak kecil.',rx:0},
+salb:{n:'Salbutamol',f:'Tablet 2 mg',p:2500,c:1200,cat:'Pernapasan',cls:'Bronkodilator',ind:'Melonggarkan saluran napas pada asma.',note:'Dapat menimbulkan tremor atau jantung berdebar; sesak berat atau tidak membaik harus dirujuk segera.',rx:1},
+lor:{n:'Loratadin',f:'Tablet 10 mg',p:4000,c:2000,cat:'Alergi',cls:'Antihistamin generasi kedua',ind:'Meredakan bersin, pilek alergi, dan gatal.',note:'Respons kantuk berbeda tiap orang.',rx:0},
+omep:{n:'Omeprazol',f:'Kapsul 20 mg',p:9000,c:5000,cat:'Saluran Cerna',cls:'Penghambat pompa proton (PPI)',ind:'Menurunkan produksi asam lambung pada GERD dan tukak lambung.',note:'Umumnya diminum sebelum makan sesuai arahan tenaga kesehatan.',rx:1},
+ors:{n:'Oralit (ORS)',f:'Serbuk sachet',p:1500,c:700,cat:'Saluran Cerna',cls:'Terapi rehidrasi oral',ind:'Mengganti cairan dan elektrolit pada diare.',note:'Larutkan sesuai petunjuk kemasan; diare berdarah, demam tinggi, atau lemas berat perlu dirujuk.',rx:0},
+zinc:{n:'Zinc',f:'Tablet dispersibel 20 mg',p:2500,c:1200,cat:'Saluran Cerna',cls:'Mineral (terapi pendamping)',ind:'Pendamping oralit pada diare akut, terutama pada anak.',note:'Gunakan sesuai arahan tenaga kesehatan.',rx:0},
+sim:{n:'Simetikon',f:'Tablet kunyah 80 mg',p:3000,c:1500,cat:'Saluran Cerna',cls:'Antiflatulen',ind:'Meredakan perut kembung akibat gas berlebih.',note:'Dikunyah sesuai petunjuk; nyeri hebat atau menetap perlu dirujuk.',rx:0},
+azi:{n:'Azitromisin',f:'Tablet 500 mg',p:15000,c:9000,cat:'Antibiotik',cls:'Antibiotik makrolida',ind:'Infeksi bakteri tertentu yang ditetapkan dokter.',note:'Hanya dengan resep; patuhi lama terapi dari dokter.',rx:1},
+met:{n:'Metformin',f:'Tablet 500 mg',p:3500,c:1800,cat:'Penyakit Kronis',cls:'Antidiabetes oral (biguanid)',ind:'Menurunkan kadar gula darah pada diabetes melitus tipe 2.',note:'Biasanya diminum bersama makanan untuk mengurangi keluhan lambung; kontrol rutin penting.',rx:1},
+amlo:{n:'Amlodipin',f:'Tablet 5 mg',p:3000,c:1500,cat:'Penyakit Kronis',cls:'Antihipertensi (penghambat kanal kalsium)',ind:'Menurunkan tekanan darah pada hipertensi.',note:'Jangan berhenti sendiri; bengkak pada kaki perlu dilaporkan ke dokter.',rx:1},
+povi:{n:'Povidon iodin',f:'Larutan 10%',p:12000,c:7000,cat:'Kulit & Luka',cls:'Antiseptik topikal',ind:'Membersihkan luka ringan dan membantu mencegah infeksi.',note:'Hanya pemakaian luar; hindari pada alergi iodium.',rx:0},
+mico:{n:'Mikonazol',f:'Krim 2%',p:15000,c:9000,cat:'Kulit & Luka',cls:'Antijamur topikal',ind:'Infeksi jamur kulit seperti kurap dan panu.',note:'Oleskan tipis; lanjutkan sesuai lama yang disarankan meski sudah membaik.',rx:0}};
+for(const k in MD)MEDS[k]=Object.assign(MEDS[k]||{},MD[k]);
+COMP.length=0;COMP.push(['demam',['para']],['demam dan nyeri otot',['para','vitc']],['nyeri sendi ringan',['ibu']],['batuk berdahak',['amb']],['batuk berdahak dan pilek',['gg','cet']],['batuk kering mengganggu tidur',['dxm']],['alergi musiman (bersin, hidung gatal)',['cet']],['gatal akibat alergi',['lor']],['nyeri lambung',['ant']],['perut kembung',['sim']],['refluks asam lambung (resep)',['omep']],['diare ringan',['ors','zinc']],['infeksi saluran napas (resep)',['amox','para']],['infeksi bakteri (resep)',['azi','para']],['luka lecet',['povi']],['jamur kulit (kurap)',['mico']],['kontrol darah tinggi (resep)',['amlo']],['kontrol gula darah (resep)',['met']],['asma ringan (resep)',['salb']],['lemas',['vitc']]);
+QZ.push({q:'Pasien menanyakan fungsi ambroksol. Penjelasan yang tepat?',a:[['Membantu mengencerkan dahak pada batuk berdahak.',2],['Menekan refleks batuk kering.',0],['Mengobati semua infeksi bakteri.',-1]]},
+{q:'Pasien bertanya mengapa antibiotik perlu resep dan tidak untuk flu?',a:[['Antibiotik hanya untuk infeksi bakteri tertentu dan pemakaian tidak tepat memicu resistensi.',2],['Supaya lebih mahal.',-1],['Karena flu butuh antibiotik kuat.',-1]]},
+{q:'Pasien diare ringan bertanya fungsi oralit.',a:[['Mengganti cairan dan elektrolit yang hilang.',2],['Menghentikan diare seketika.',0],['Membunuh bakteri penyebab.',-1]]},
+{q:'Pasien merasa tekanan darahnya normal dan ingin berhenti minum obat.',a:[['Jelaskan jangan berhenti sendiri; konsultasikan ke dokter.',2],['Boleh berhenti kalau merasa sehat.',-1],['Diamkan saja.',0]]},
+{q:'Perbedaan antasida dan omeprazol yang tepat?',a:[['Antasida menetralkan asam lambung; omeprazol menurunkan produksinya.',2],['Keduanya sama persis.',-1],['Antasida mengobati infeksi.',-1]]},
+{q:'Pasien bertanya apakah cetirizine bisa membuat mengantuk.',a:[['Bisa pada sebagian orang; hati-hati berkendara dan perhatikan responsmu.',2],['Pasti mengantuk, jadi jangan dipakai.',0],['Tidak mungkin mengantuk.',-1]]},
+{q:'Pasien diabetes memakai metformin. Pesan penting?',a:[['Minum teratur sesuai arahan, kontrol gula darah, hubungi dokter bila lambung mengganggu.',2],['Berhenti jika gula sudah normal.',-1],['Ganti sendiri dengan jamu.',-1]]});
+const CATS=['Nyeri & Demam','Pernapasan','Alergi','Saluran Cerna','Antibiotik','Penyakit Kronis','Kulit & Luka','Suplemen'];
+function shelf(cat){const n=Object.values(S.inv).reduce((a,b)=>a+b,0);
+if(!cat)return modal('Rak Obat',`Tas: ${n}/6 item. Pilih kategori rak.`,CATS.map(c=>({t:c+' ('+Object.keys(MEDS).filter(k=>MEDS[k].cat==c).length+')',fn:()=>shelf(c)})).concat([{t:'Tutup'}]));
+modal('Rak: '+cat,`Tas: ${n}/6 item. Stok berkurang saat obat diambil.`,Object.keys(MEDS).filter(k=>MEDS[k].cat==cat).map(k=>({t:`${nm(k)} ${MEDS[k].f} — ${MEDS[k].ind} • stok ${S.stock[k]}${S.stock[k]<6?' ⚠':''} • ED hari ${edOf(k)}${MEDS[k].rx?' • RESEP':''}`,d:S.stock[k]<1,fn:()=>{if(n>=6){toast('Tas penuh');return}S.stock[k]--;takeB(k);S.inv[k]=(S.inv[k]||0)+1;toast('Mengambil '+nm(k));shelf(cat)}})).concat([{t:'Kategori lain',fn:()=>shelf()},{t:'Tutup'}]))}
+function buku(cat){if(!cat)return modal('Buku Obat (Formularium)','Pilih kategori untuk belajar indikasi dasar obat. Informasi edukatif, bukan pengganti rujukan resmi.',CATS.map(c=>({t:c,fn:()=>buku(c)})).concat([{t:'Kembali',fn:pc}]));
+modal('Buku Obat: '+cat,Object.keys(MEDS).filter(k=>MEDS[k].cat==cat).map(k=>{const m=MEDS[k];return`<b>${m.n}</b> — ${m.f}<br><small>${m.cls} • ${m.rx?'Obat keras (resep)':'Tanpa resep (OTC)'} • ${rp(m.p)}</small><br>Indikasi dasar: ${m.ind}<br><i>Catatan konseling: ${m.note}</i>`}).join('<hr>')+'<hr><small>Sumber belajar: Farmakope Indonesia; Formularium Nasional; Permenkes No. 73/2016. Verifikasi pada sumber resmi.</small>',[{t:'Kategori lain',fn:()=>buku()},{t:'Kembali',fn:pc}])}
+const MU={ctx:null,g:null,timer:null};
+function musicVol(){if(MU.g)MU.g.gain.value=(CFG.mv==null?3:CFG.mv)*.08;try{localStorage.setItem('plcfg',JSON.stringify(CFG))}catch(e){}}
+function mnote(m,t0,d,type,v){const c=MU.ctx,o=c.createOscillator(),g=c.createGain();o.type=type;o.frequency.value=440*Math.pow(2,(m-69)/12);g.gain.setValueAtTime(0,t0);g.gain.linearRampToValueAtTime(v,t0+.05);g.gain.exponentialRampToValueAtTime(.0001,t0+d);o.connect(g);g.connect(MU.g);o.start(t0);o.stop(t0+d+.05)}
+function musicStart(){if(MU.ctx)return;try{const A=window.AudioContext||window.webkitAudioContext,c=MU.ctx=new A();MU.g=c.createGain();MU.g.connect(c.destination);if(CFG.mv==null)CFG.mv=3;musicVol();
+const CH=[[48,55,64,67],[45,52,60,64],[41,48,57,60],[43,50,59,62]],PN=[72,74,76,79,81,84],beat=.7;let bar=0,nt=c.currentTime+.3;
+MU.timer=setInterval(()=>{if(c.state!='running')return;if(nt<c.currentTime)nt=c.currentTime+.1;while(nt<c.currentTime+1.6){const ch=CH[bar%4];ch.forEach(m=>mnote(m,nt,beat*4.2,'sine',.05));mnote(ch[0]-12,nt,beat*2,'sine',.09);mnote(ch[0]-12,nt+beat*2,beat*2,'sine',.07);for(let b=0;b<8;b++)if(Math.random()<.55)mnote(pick(PN),nt+b*beat/2,beat*1.4,'triangle',.06);nt+=beat*4;bar++}},400);
+document.addEventListener('pointerdown',()=>{if(c.state=='suspended')c.resume()});document.addEventListener('visibilitychange',()=>{document.hidden?c.suspend():c.resume()})}catch(e){}}
+const WP=[{x:500,y:260},{x:620,y:260},{x:470,y:380},{x:600,y:380},{x:540,y:470},{x:620,y:470}];
+function buildMain(sc){ex();[[100,24,40,70,'KULKAS'],[160,24,120,40,'ETALASE'],[470,82,130,28,'ETALASE'],[470,200,130,28,'ETALASE'],[520,300,60,30,'TENSI'],[620,400,26,30,'TIMBANGAN'],[640,220,22,40,'DISPENSER'],[470,580,90,30,'BANGKU'],[30,596,16,20,'SAMPAH'],[400,560,22,36,'BROSUR']].forEach(a=>FX(sc,a[0],a[1],a[2],a[3],0xffffff,a[4]));
+const g=sc.add.graphics().setDepth(2);for(let y=270;y<=600;y+=66)[285,355].forEach(x=>{if(y<600){g.fillStyle(0xd9784a,.85).fillRect(x-1,y-12,2,62)}g.fillStyle(0x6b5a48).fillRect(x-2,y-16,4,18);g.fillStyle(0xf2c14e).fillRect(x-4,y-18,8,3)});
+g.fillStyle(0x8b5e3c).fillRect(300,596,80,22);sc.add.text(340,607,'SELAMAT DATANG',{fontSize:'7px',fontFamily:'monospace',color:'#fff6e0'}).setOrigin(.5).setDepth(3);
+g.fillStyle(0xfff6e0).fillCircle(420,34,12);g.lineStyle(2,0x3a3427).strokeCircle(420,34,12);g.lineStyle(1,0x3a3427).lineBetween(420,34,420,26).lineBetween(420,34,426,36);
+g.fillStyle(0xfff6e0).fillRect(318,22,44,32);g.lineStyle(3,0x8b5e3c).strokeRect(318,22,44,32);g.fillStyle(0x5b8fa8).fillCircle(334,38,5).fillCircle(346,38,5);
+[[160,120],[320,120],[520,160],[560,420],[320,420],[140,420]].forEach(p=>sc.add.circle(p[0],p[1],60,0xfff2b0,.07).setDepth(3));
+sc.amb=[1,3,5].map((p,i)=>({s:sc.add.sprite(WP[i].x,WP[i].y,'n'+p+'d0').setScale(2).setOrigin(.5,1),p,g:null,w:i*900}))}
+function ambUp(sc,t,dt){const open=hr()>=8&&hr()<18;(sc.amb||[]).forEach(a=>{const s=a.s;s.setVisible(open);if(!open)return;let mv=false,dir='d';if(a.g){const dx=a.g.x-s.x,dy=a.g.y-s.y,d=Math.hypot(dx,dy);if(d>3){s.x+=dx/d*30*dt/1000;s.y+=dy/d*30*dt/1000;mv=true;dir=Math.abs(dy)>Math.abs(dx)?(dy<0?'u':'d'):'s';s._l=dx<0}else{a.g=null;a.w=2000+Math.random()*4000}}else{a.w-=dt;if(a.w<=0)a.g=pick(WP)}setSp(s,'n'+a.p,dir,mv,t,220);s.setDepth(s.y)})}
+const jb=$('joy'),jk=$('knob');let jid=null;
+function jm(e){const r=jb.getBoundingClientRect(),R=r.width/2;let dx=e.clientX-r.left-R,dy=e.clientY-r.top-R;const d=Math.hypot(dx,dy);if(d>R){dx*=R/d;dy*=R/d}jk.style.transform=`translate(calc(-50% + ${dx}px),calc(-50% + ${dy}px))`;const c=v=>Math.abs(v)<.15?0:Math.max(-1,Math.min(1,v*CFG.sens));J.x=c(dx/R);J.y=c(dy/R)}
+jb.addEventListener('pointerdown',e=>{jid=e.pointerId;jb.setPointerCapture(jid);jm(e)});jb.addEventListener('pointermove',e=>{if(e.pointerId===jid)jm(e)});
+['pointerup','pointercancel'].forEach(n=>jb.addEventListener(n,()=>{jid=null;J.x=J.y=0;jk.style.transform='translate(-50%,-50%)'}));
+$('bi').addEventListener('pointerdown',()=>IP=true);const br=$('br');br.addEventListener('pointerdown',()=>{RUN=true;br.style.background='#e8833a'});['pointerup','pointercancel','pointerleave'].forEach(n=>br.addEventListener(n,()=>{RUN=false;br.style.background=''}));
+$('b1').onclick=()=>busy||inv();$('b2').onclick=()=>busy||mapM();$('b3').onclick=()=>busy||taskM();$('b4').onclick=()=>busy||menu();
+function begin(){$('start').hidden=true;busy=false;cfg();musicStart();new Phaser.Game({type:Phaser.AUTO,width:800,height:400,parent:'g',pixelArt:true,disableContextMenu:true,input:{activePointers:3},fps:{target:60},render:{powerPreference:'low-power',roundPixels:true},backgroundColor:'#6f8f72',scale:{mode:Phaser.Scale.FIT,autoCenter:Phaser.Scale.CENTER_BOTH},physics:{default:'arcade',arcade:{debug:false}},scene:Main})}
+try{if(localStorage.getItem('plsave'))$('s2').hidden=false}catch(e){}
+$('s1').onclick=()=>{S=def();S.name=$('nm').value.trim()||'Apoteker';begin()};
+$('s2').onclick=()=>{try{S=Object.assign(def(),JSON.parse(localStorage.getItem('plsave')))}catch(e){S=def()}begin()};
+</script></body></html>
